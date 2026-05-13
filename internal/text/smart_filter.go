@@ -13,6 +13,10 @@ var noiseWords = map[string]bool{
 	"teams":      true,
 	"ability":    true,
 	"responsible": true,
+	"developed":  true,
+	"develop":    true,
+	"using":      true,
+	"based":      true,
 }
 
 func IsRelevantToken(token string) bool {
