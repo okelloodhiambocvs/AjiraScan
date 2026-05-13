@@ -19,10 +19,11 @@ func read(path string) string {
 func main() {
 	cv := flag.String("cv", "", "CV file path")
 	job := flag.String("job", "", "Job file path")
+	output := flag.String("out", "", "Output PDF file path")
 	flag.Parse()
 
 	if *cv == "" || *job == "" {
-		fmt.Println("Usage: go run ./cmd/cli -cv <cv_file> -job <job_file>")
+		fmt.Println("Usage: go run ./cmd/cli -cv <cv_file> -job <job_file> -out <output_pdf>")
 		return
 	}
 
@@ -107,7 +108,7 @@ func main() {
 	}
 
 	fmt.Println()
-	
+
 	fmt.Println("CV Improvement Suggestions:")
 
 	for _, imp := range result.Improvements {
@@ -115,5 +116,16 @@ func main() {
 		fmt.Println("Improved:", imp.Improved)
 		fmt.Println("Reason:", imp.Reason)
 		fmt.Println()
+	}
+
+	// PDF EXPORT OPTION
+	if *output != "" {
+		err := ats.ExportCVToPDF(read(*cv), result.Improvements, *output)
+		if err != nil {
+			fmt.Println("Failed to export PDF:", err)
+		} else {
+			fmt.Println()
+			fmt.Println("CV exported successfully to:", *output)
+		}
 	}
 }

@@ -59,3 +59,7 @@ func Analyze(cv, job string) Result {
 		Improvements:     improvements,
 	}
 }
+
+func GeneratePDFReport(cv string, result Result, outputPath string) error {
+	return ExportCVToPDF(cv, result.Improvements, outputPath)
+}
