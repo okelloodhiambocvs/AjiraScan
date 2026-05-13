@@ -108,4 +108,5 @@ func main() {
 	for _, s := range frequencySuggestions {
 		fmt.Println("-", s)
 	}
+	fmt.Println()
 }
