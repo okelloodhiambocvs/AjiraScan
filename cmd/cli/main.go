@@ -18,7 +18,7 @@ func read(path string) string {
 
 func main() {
 	cv := flag.String("cv", "", "CV file path")
-	job := flag.String("job", "", "Job file path")
+	job := flag.String("job", "", "Job description file path")
 
 	flag.Parse()
 
@@ -47,26 +47,37 @@ func main() {
 
 	fmt.Println()
 	fmt.Println("Matched Keywords:")
+
 	for _, m := range result.Matched {
 		fmt.Println("-", m)
 	}
 
 	fmt.Println()
 	fmt.Println("Missing Keywords:")
+
 	for _, m := range result.Missing {
 		fmt.Println("-", m)
 	}
 
 	fmt.Println()
 	fmt.Println("Detected Sections:")
+
 	for _, s := range result.FoundSections {
 		fmt.Println("✓", s)
 	}
 
 	fmt.Println()
 	fmt.Println("Missing Sections:")
+
 	for _, s := range result.MissingSections {
 		fmt.Println("✗", s)
+	}
+
+	fmt.Println()
+	fmt.Println("Keyword Frequency:")
+
+	for _, item := range result.KeywordFrequency {
+		fmt.Printf("- %s: %d\n", item.Keyword, item.Count)
 	}
 
 	fmt.Println()
@@ -79,6 +90,12 @@ func main() {
 	sectionSuggestions := ats.SectionSuggestions(result.MissingSections)
 
 	for _, s := range sectionSuggestions {
+		fmt.Println("-", s)
+	}
+
+	frequencySuggestions := ats.FrequencySuggestions(result.KeywordFrequency)
+
+	for _, s := range frequencySuggestions {
 		fmt.Println("-", s)
 	}
 }

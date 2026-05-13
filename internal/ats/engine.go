@@ -3,12 +3,13 @@ package ats
 import "ajirascan/internal/text"
 
 type Result struct {
-	Score          int
-	Matched        []string
-	Missing        []string
-	Suggestions    []string
-	FoundSections  []string
-	MissingSections []string
+	Score              int
+	Matched            []string
+	Missing            []string
+	Suggestions        []string
+	FoundSections      []string
+	MissingSections    []string
+	KeywordFrequency   []FrequencyReport
 }
 
 func Analyze(cv, job string) Result {
@@ -22,13 +23,16 @@ func Analyze(cv, job string) Result {
 	suggestions := Suggestions(missing)
 	
 	sections := DetectSections(cv)
+	
+	frequency := AnalyzeKeywordFrequency(cvTokens)
 
 	return Result{
-	Score:           score,
-	Matched:         matched,
-	Missing:         missing,
-	Suggestions:     suggestions,
-	FoundSections:   sections.Found,
-	MissingSections: sections.Missing,
+	Score:            score,
+	Matched:          matched,
+	Missing:          missing,
+	Suggestions:      suggestions,
+	FoundSections:    sections.Found,
+	MissingSections:  sections.Missing,
+	KeywordFrequency: frequency,
 }
 }
