@@ -92,21 +92,28 @@ func main() {
 	fmt.Println()
 
 	fmt.Println("Suggestions:")
-
 	for _, s := range result.Suggestions {
 		fmt.Println("-", s)
 	}
 
 	sectionSuggestions := ats.SectionSuggestions(result.MissingSections)
-
 	for _, s := range sectionSuggestions {
 		fmt.Println("-", s)
 	}
 
 	frequencySuggestions := ats.FrequencySuggestions(result.KeywordFrequency)
-
 	for _, s := range frequencySuggestions {
 		fmt.Println("-", s)
 	}
+
 	fmt.Println()
+	
+	fmt.Println("CV Improvement Suggestions:")
+
+	for _, imp := range result.Improvements {
+		fmt.Println("Original:", imp.Original)
+		fmt.Println("Improved:", imp.Improved)
+		fmt.Println("Reason:", imp.Reason)
+		fmt.Println()
+	}
 }
