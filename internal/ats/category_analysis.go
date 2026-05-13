@@ -27,6 +27,12 @@ func AnalyzeCategories(tokens []string) []CategoryReport {
 		score := 0
 		if len(keywords) > 0 {
 			score = (len(matched) * 100) / len(keywords)
+		} else {
+			score = 0
+		}
+
+		if len(matched) == 0 {
+			score = 0
 		}
 
 		reports = append(reports, CategoryReport{
