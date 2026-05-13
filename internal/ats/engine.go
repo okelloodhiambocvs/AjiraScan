@@ -1,6 +1,6 @@
 package ats
 
-import "smart-cv-checker/internal/text"
+import "ajirascan/internal/text"
 
 type Result struct {
 	Score   int

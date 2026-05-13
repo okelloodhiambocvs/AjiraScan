@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"smart-cv-checker/internal/ats"
+	"ajirascan/internal/ats"
 )
 
 func read(path string) string {
