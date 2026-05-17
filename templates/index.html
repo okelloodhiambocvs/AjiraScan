@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>AjiraScan</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
 
 <h1>AjiraScan ATS Scanner</h1>
@@ -17,8 +19,6 @@ name="cv"
 rows="12"
 cols="60"
 placeholder="Paste CV here"></textarea>
-
-<br><br>
 
 <p>Or upload CV file (.txt)</p>
 
@@ -50,8 +50,6 @@ Analyze CV
 
 <p><strong>Job Type:</strong> {{.JobType}}</p>
 
-<!-- STEP 64 CHANGE STARTS HERE -->
-
 <h3>Matched Keywords</h3>
 
 <ul>
@@ -68,7 +66,15 @@ Analyze CV
 {{end}}
 </ul>
 
-<!-- STEP 64 CHANGE ENDS HERE -->
+<!-- STEP 65 EXACT CHANGE -->
+
+<h3>Suggestions</h3>
+
+<ul>
+{{range .Suggestions}}
+<li>{{.}}</li>
+{{end}}
+</ul>
 
 </body>
 </html>
