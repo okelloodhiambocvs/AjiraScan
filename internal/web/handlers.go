@@ -55,6 +55,24 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			os.Remove(tempPath)
+
+		case strings.HasSuffix(filename, ".pdf"):
+
+			tempPath := "temp.pdf"
+
+			tempFile, _ := os.Create(tempPath)
+
+			io.Copy(tempFile, file)
+
+			tempFile.Close()
+
+			parsed, parseErr := ReadPDF(tempPath)
+
+			if parseErr == nil {
+				cv = parsed
+			}
+
+			os.Remove(tempPath)
 		}
 	}
 
