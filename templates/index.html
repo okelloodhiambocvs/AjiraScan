@@ -3,7 +3,6 @@
 <head>
     <title>AjiraScan</title>
 </head>
-
 <body>
 
 <h1>AjiraScan ATS Scanner</h1>
@@ -42,6 +41,34 @@ Analyze CV
 </button>
 
 </form>
+
+<hr>
+
+<h2>ATS Result</h2>
+
+<p><strong>Score:</strong> {{.Score}}</p>
+
+<p><strong>Job Type:</strong> {{.JobType}}</p>
+
+<!-- STEP 64 CHANGE STARTS HERE -->
+
+<h3>Matched Keywords</h3>
+
+<ul>
+{{range .Matched}}
+<li>{{.}}</li>
+{{end}}
+</ul>
+
+<h3>Missing Keywords</h3>
+
+<ul>
+{{range .Missing}}
+<li>{{.}}</li>
+{{end}}
+</ul>
+
+<!-- STEP 64 CHANGE ENDS HERE -->
 
 </body>
 </html>
