@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>AjiraScan</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
 </head>
+
 <body>
 
 <h1>AjiraScan ATS Scanner</h1>
 
 <form method="POST" action="/analyze">
 
-<textarea name="cv" rows="12" cols="60"
+<textarea
+name="cv"
+rows="12"
+cols="60"
 placeholder="Paste CV here"></textarea>
 
 <br><br>
 
-<textarea name="job" rows="12" cols="60"
+<textarea
+name="job"
+rows="12"
+cols="60"
 placeholder="Paste Job Description here"></textarea>
 
 <br><br>
@@ -23,15 +34,21 @@ placeholder="Paste Job Description here"></textarea>
 Analyze CV
 </button>
 
+</form>
+
 <hr>
 
 <h2>ATS Result</h2>
 
-<p><strong>Score:</strong> {{.Score}}</p>
+<p>
+<strong>Score:</strong>
+{{.Score}}
+</p>
 
-<p><strong>Job Type:</strong> {{.JobType}}</p>
-
-</form>
+<p>
+<strong>Job Type:</strong>
+{{.JobType}}
+</p>
 
 </body>
 </html>
