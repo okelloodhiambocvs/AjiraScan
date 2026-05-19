@@ -1,106 +1,199 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>AjiraScan</title>
-    <link rel="stylesheet" href="/static/style.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AjiraScan | Premium ATS Intelligence</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
 </head>
+
 <body>
 
-<h1>AjiraScan ATS Scanner</h1>
+<nav class="navbar">
+
+<div class="logo">
+
+<div class="logo-icon">
+A
+</div>
+
+<div class="logo-text">
+
+<h2>AJIRASCAN</h2>
+
+<p>Premium ATS Intelligence</p>
+
+</div>
+
+</div>
+
+</nav>
+
+<section class="hero">
+
+<h1>
+Beat the ATS.
+Land More Interviews.
+</h1>
+
+<p>
+Analyze your CV against any job description,
+discover missing keywords,
+and optimize your resume like a recruiter.
+</p>
+
+</section>
+
+<section class="scanner-card">
 
 <form
 method="POST"
 action="/analyze"
 enctype="multipart/form-data">
 
+<label>Paste Your CV</label>
+
 <textarea
 name="cv"
 rows="12"
-cols="60"
-placeholder="Paste CV here"></textarea>
+placeholder="Paste your CV / Resume here..."></textarea>
 
-<p>Or upload CV file (.txt)</p>
+<label>Upload CV (.txt .docx .pdf)</label>
 
 <input
 type="file"
 name="cvfile">
 
-<br><br>
+<label>Paste Job Description</label>
 
 <textarea
 name="job"
 rows="12"
-cols="60"
-placeholder="Paste Job Description here"></textarea>
-
-<br><br>
+placeholder="Paste Job Description here..."></textarea>
 
 <button type="submit">
-Analyze CV
+
+Analyze Resume
+
 </button>
 
 </form>
 
-<hr>
+</section>
 
-<h2>ATS Result</h2>
+{{if .Score}}
 
-<p><strong>Score:</strong> {{.Score}}</p>
+<section class="results-container">
 
-<p><strong>Job Type:</strong> {{.JobType}}</p>
+<div class="score-card">
+
+<h2>ATS Score</h2>
+
+<div class="score-number">
+
+{{.Score}}%
+
+</div>
+
+<p>{{.JobType}}</p>
+
+</div>
+
+<div class="dashboard-card">
 
 <h3>Matched Keywords</h3>
 
 <ul>
+
 {{range .Matched}}
+
 <li>{{.}}</li>
+
 {{end}}
+
 </ul>
+
+</div>
+
+<div class="dashboard-card">
 
 <h3>Missing Keywords</h3>
 
 <ul>
+
 {{range .Missing}}
+
 <li>{{.}}</li>
+
 {{end}}
+
 </ul>
+
+</div>
+
+<div class="dashboard-card">
 
 <h3>Suggestions</h3>
 
 <ul>
+
 {{range .Suggestions}}
+
 <li>{{.}}</li>
+
 {{end}}
+
 </ul>
 
-<!-- STEP 66 EXACT CHANGE -->
+</div>
+
+<div class="dashboard-card">
 
 <h3>CV Improvements</h3>
 
 {{range .Improvements}}
 
-<div>
+<div class="improvement">
 
 <p>
+
 <strong>Original:</strong>
+
 {{.Original}}
+
 </p>
 
 <p>
+
 <strong>Improved:</strong>
+
 {{.Improved}}
+
 </p>
 
 <p>
-<strong>Reason:</strong>
-{{.Reason}}
-</p>
 
-<hr>
+<strong>Reason:</strong>
+
+{{.Reason}}
+
+</p>
 
 </div>
 
 {{end}}
 
+</div>
+
+</section>
+
+{{end}}
+
 </body>
+
 </html>
