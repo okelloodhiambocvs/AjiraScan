@@ -4,6 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>AjiraScan | Premium ATS Intelligence</title>
@@ -35,6 +36,12 @@ A
 </nav>
 
 <section class="hero">
+
+<div class="hero-badge">
+
+Trusted by Job Seekers • Recruiters • Professionals
+
+</div>
 
 <h1>
 
@@ -82,7 +89,7 @@ placeholder="Paste Job Description here..."></textarea>
 
 <button type="submit">
 
-Analyze Resume
+Analyze Resume →
 
 </button>
 
@@ -220,29 +227,11 @@ Weak Match
 
 <div class="improvement">
 
-<p>
+<p><strong>Original:</strong> {{.Original}}</p>
 
-<strong>Original:</strong>
+<p><strong>Improved:</strong> {{.Improved}}</p>
 
-{{.Original}}
-
-</p>
-
-<p>
-
-<strong>Improved:</strong>
-
-{{.Improved}}
-
-</p>
-
-<p>
-
-<strong>Reason:</strong>
-
-{{.Reason}}
-
-</p>
+<p><strong>Reason:</strong> {{.Reason}}</p>
 
 </div>
 
@@ -253,6 +242,22 @@ Weak Match
 </section>
 
 {{end}}
+
+<footer>
+
+<div class="footer-logo">
+
+AJIRASCAN
+
+</div>
+
+<p>
+
+Premium ATS Intelligence • Built for ambitious professionals.
+
+</p>
+
+</footer>
 
 </body>
 
