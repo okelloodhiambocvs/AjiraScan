@@ -37,14 +37,18 @@ A
 <section class="hero">
 
 <h1>
+
 Beat the ATS.
 Land More Interviews.
+
 </h1>
 
 <p>
+
 Analyze your CV against any job description,
 discover missing keywords,
 and optimize your resume like a recruiter.
+
 </p>
 
 </section>
@@ -88,21 +92,77 @@ Analyze Resume
 
 {{if .Score}}
 
-<section class="results-container">
+<section class="dashboard-top">
 
-<div class="score-card">
+<div class="score-panel">
 
-<h2>ATS Score</h2>
-
-<div class="score-number">
+<div class="score-circle">
 
 {{.Score}}%
 
 </div>
 
+<h2>ATS MATCH SCORE</h2>
+
 <p>{{.JobType}}</p>
 
 </div>
+
+<div class="rating-panel">
+
+<h2>ATS Performance</h2>
+
+{{if ge .Score 80}}
+
+<div class="rating excellent">
+
+Excellent Match
+
+</div>
+
+{{else if ge .Score 60}}
+
+<div class="rating strong">
+
+Strong Match
+
+</div>
+
+{{else if ge .Score 40}}
+
+<div class="rating moderate">
+
+Moderate Match
+
+</div>
+
+{{else}}
+
+<div class="rating weak">
+
+Weak Match
+
+</div>
+
+{{end}}
+
+</div>
+
+<div class="kpi-panel">
+
+<h2>Quick Metrics</h2>
+
+<p>Matched Keywords: {{len .Matched}}</p>
+
+<p>Missing Keywords: {{len .Missing}}</p>
+
+<p>Suggestions: {{len .Suggestions}}</p>
+
+</div>
+
+</section>
+
+<section class="results-container">
 
 <div class="dashboard-card">
 
