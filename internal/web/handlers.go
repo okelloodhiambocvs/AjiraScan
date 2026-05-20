@@ -2,87 +2,33 @@ package web
 
 import (
 	"html/template"
-	"io"
 	"net/http"
-	"os"
-	"strings"
 
 	"ajirascan/internal/ats"
 )
 
+// FIXED PATH: templates (NOT template)
+var tmpl = template.Must(
+	template.ParseFiles("templates/index.html"),
+)
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
-	if r.Method == http.MethodGet {
+	if r.Method == http.MethodPost {
 
-		tmpl := template.Must(
-			template.ParseFiles("templates/index.html"),
-		)
+		cv := r.FormValue("cv")
+		job := r.FormValue("job")
 
-		tmpl.Execute(w, nil)
+		if cv == "" || job == "" {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		result := ats.Analyze(cv, job)
+
+		_ = tmpl.Execute(w, result)
 		return
 	}
 
-	cv := r.FormValue("cv")
-
-	file, header, err := r.FormFile("cvfile")
-
-	if err == nil {
-
-		defer file.Close()
-
-		filename := strings.ToLower(header.Filename)
-
-		switch {
-
-		case strings.HasSuffix(filename, ".txt"):
-
-			cv = ReadTXT(file)
-
-		case strings.HasSuffix(filename, ".docx"):
-
-			tempPath := "temp.docx"
-
-			tempFile, _ := os.Create(tempPath)
-
-			io.Copy(tempFile, file)
-
-			tempFile.Close()
-
-			parsed, parseErr := ReadDOCX(tempPath)
-
-			if parseErr == nil {
-				cv = parsed
-			}
-
-			os.Remove(tempPath)
-
-		case strings.HasSuffix(filename, ".pdf"):
-
-			tempPath := "temp.pdf"
-
-			tempFile, _ := os.Create(tempPath)
-
-			io.Copy(tempFile, file)
-
-			tempFile.Close()
-
-			parsed, parseErr := ReadPDF(tempPath)
-
-			if parseErr == nil {
-				cv = parsed
-			}
-
-			os.Remove(tempPath)
-		}
-	}
-
-	job := r.FormValue("job")
-
-	result := ats.Analyze(cv, job)
-
-	tmpl := template.Must(
-		template.ParseFiles("templates/index.html"),
-	)
-
-	tmpl.Execute(w, result)
+	_ = tmpl.Execute(w, nil)
 }
