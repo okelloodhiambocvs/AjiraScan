@@ -29,103 +29,91 @@ func main() {
 
 	result := ats.Analyze(read(*cv), read(*job))
 
-	fmt.Println("====== AJIRASCAN ATS REPORT ======")
-	fmt.Println()
+	// CLEAN REPORT OUTPUT (NEW FORMAT)
+	fmt.Println("\n==================================")
+	fmt.Println("AJIRASCAN ANALYSIS COMPLETE")
+	fmt.Println("==================================\n")
 
-	fmt.Println("Detected Job Type:", result.JobType)
-	fmt.Println()
-
-	fmt.Println("ATS Score:", result.Score)
+	fmt.Printf("JOB TYPE: %s\n", result.JobType)
+	fmt.Printf("ATS SCORE: %d/100\n", result.Score)
 
 	switch {
 	case result.Score >= 80:
-		fmt.Println("ATS Rating: Excellent Match")
+		fmt.Println("RATING: Excellent Match")
 	case result.Score >= 60:
-		fmt.Println("ATS Rating: Strong Match")
+		fmt.Println("RATING: Strong Match")
 	case result.Score >= 40:
-		fmt.Println("ATS Rating: Moderate Match")
+		fmt.Println("RATING: Moderate Match")
 	default:
-		fmt.Println("ATS Rating: Weak Match")
+		fmt.Println("RATING: Weak Match")
 	}
 
-	fmt.Println()
+	fmt.Println("\n----------------------------------")
+	fmt.Println("CORE INSIGHTS")
+	fmt.Println("----------------------------------")
 
-	fmt.Println("Matched Keywords:")
-	for _, m := range result.Matched {
-		fmt.Println("-", m)
+	// Top 5 matched keywords only
+	for i, m := range result.Matched {
+		if i >= 5 {
+			break
+		}
+		fmt.Println("✓", m)
 	}
 
-	fmt.Println()
-
-	fmt.Println("Missing Keywords:")
-	for _, m := range result.Missing {
-		fmt.Println("-", m)
+	// Top 5 missing keywords only
+	for i, m := range result.Missing {
+		if i >= 5 {
+			break
+		}
+		fmt.Println("✕", m)
 	}
 
-	fmt.Println()
+	fmt.Println("\n----------------------------------")
+	fmt.Println("SECTION COVERAGE")
+	fmt.Println("----------------------------------")
 
-	fmt.Println("Keyword Frequency:")
-	for _, item := range result.KeywordFrequency {
-		fmt.Printf("- %s: %d\n", item.Keyword, item.Count)
-	}
-
-	fmt.Println()
-
-	fmt.Println("Detected Sections:")
 	for _, s := range result.FoundSections {
 		fmt.Println("✓", s)
 	}
 
-	fmt.Println()
-
-	fmt.Println("Missing Sections:")
 	for _, s := range result.MissingSections {
-		fmt.Println("✗", s)
+		fmt.Println("✕", s)
 	}
 
-	fmt.Println()
+	fmt.Println("\n----------------------------------")
+	fmt.Println("TOP RECOMMENDATIONS")
+	fmt.Println("----------------------------------")
 
-	fmt.Println("Skill Category Analysis:")
-	for _, c := range result.CategoryAnalysis {
-		fmt.Printf("- %s: %d%% match\n", c.Category, c.Score)
-	}
-
-	fmt.Println()
-
-	fmt.Println("Suggestions:")
-	for _, s := range result.Suggestions {
-		fmt.Println("-", s)
-	}
-
-	sectionSuggestions := ats.SectionSuggestions(result.MissingSections)
-	for _, s := range sectionSuggestions {
-		fmt.Println("-", s)
-	}
+	// Merge + limit suggestions (avoid noise explosion)
+	suggestions := append(result.Suggestions,
+		ats.SectionSuggestions(result.MissingSections)...,
+	)
 
 	frequencySuggestions := ats.FrequencySuggestions(result.KeywordFrequency)
-	for _, s := range frequencySuggestions {
-		fmt.Println("-", s)
-	}
+	suggestions = append(suggestions, frequencySuggestions...)
 
-	fmt.Println()
-
-	fmt.Println("CV Improvement Suggestions:")
-
-	for _, imp := range result.Improvements {
-		fmt.Println("Original:", imp.Original)
-		fmt.Println("Improved:", imp.Improved)
-		fmt.Println("Reason:", imp.Reason)
-		fmt.Println()
+	for i, s := range suggestions {
+		if i >= 6 {
+			break
+		}
+		fmt.Println("•", s)
 	}
 
 	// PDF EXPORT OPTION
 	if *output != "" {
 		err := ats.ExportCVToPDF(read(*cv), result.Improvements, *output)
 		if err != nil {
-			fmt.Println("Failed to export PDF:", err)
-		} else {
-			fmt.Println()
-			fmt.Println("CV exported successfully to:", *output)
+			fmt.Println("\nFailed to export PDF:", err)
+			return
 		}
+
+		fmt.Println("\n----------------------------------")
+		fmt.Println("PDF EXPORT")
+		fmt.Println("----------------------------------")
+		fmt.Println("✓ CV exported successfully to:", *output)
 	}
+
+	fmt.Println("\n==================================")
+	fmt.Println("END OF REPORT")
+	fmt.Println("==================================")
 }
