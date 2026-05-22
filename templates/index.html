@@ -2,12 +2,14 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AjiraScan | Premium ATS Intelligence</title>
+<title>AjiraScan | ATS Intelligence</title>
 
 <link rel="stylesheet" href="/static/style.css">
+
 </head>
 
 <body>
@@ -15,52 +17,61 @@
 <nav class="navbar">
 
 <div class="logo">
+
 <div class="logo-icon">A</div>
 
 <div class="logo-text">
+
 <h2>AJIRASCAN</h2>
 <p>Premium ATS Intelligence</p>
-</div>
 
 </div>
-
+</div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
 
 <div class="hero-badge">
-Trusted by Job Seekers • Recruiters • Professionals
+Trusted by Professionals • Recruiters • Job Seekers
 </div>
 
-<h1>Beat the ATS. Land More Interviews.</h1>
+<h1>Beat the ATS.</h1>
 
 <p>
-Analyze your CV against any job description and instantly get recruiter-level feedback.
+Professional CV intelligence designed for serious applicants.
 </p>
 
 </section>
 
-<!-- SCANNER -->
 <section class="scanner-card">
 
-<form id="atsForm"
+<form
+id="atsForm"
 method="POST"
 action="/analyze"
-enctype="multipart/form-data"
-onsubmit="startLoading()">
+onsubmit="startLoading()"
+>
 
-<label>Paste Your CV</label>
-<textarea name="cv" rows="10" placeholder="Paste your CV here..."></textarea>
+<label>Paste CV</label>
 
-<label>Upload CV</label>
-<input type="file" name="cvfile">
+<textarea
+name="cv"
+rows="10"
+placeholder="Paste CV here..."
+></textarea>
 
 <label>Paste Job Description</label>
-<textarea name="job" rows="10" placeholder="Paste job description here..."></textarea>
 
-<button id="analyzeBtn" type="submit">
+<textarea
+name="job"
+rows="10"
+placeholder="Paste job description..."
+></textarea>
+
+<button id="analyzeBtn">
+
 Analyze Resume
+
 </button>
 
 <div id="loadingBar" class="loading-bar hidden"></div>
@@ -69,101 +80,202 @@ Analyze Resume
 
 </section>
 
-<!-- DASHBOARD -->
 {{if .Score}}
 
-<section class="dashboard">
+<section class="report-wrapper">
+
+<div class="report-header">
 
 <div class="score-panel">
 
 <div class="score-circle" id="scoreCircle">
+
 {{.Score}}%
-</div>
-
-<h2>ATS SCORE</h2>
-<p class="job-type">{{.JobType}}</p>
-
-<div class="progress-container">
-<div class="progress-bar" id="progressBar"></div>
-</div>
 
 </div>
 
-<div class="rating-panel">
+<p class="score-label">
+ATS SCORE
+</p>
 
-<h2>ATS INSIGHTS</h2>
+</div>
+
+<div class="report-summary">
+
+<h2>
+
+AJIRASCAN ANALYSIS COMPLETE
+
+</h2>
+
+<p>
+
+Rating:
+<strong>
 
 {{if ge .Score 80}}
-<div class="rating excellent">Excellent Match</div>
+Excellent Match
 {{else if ge .Score 60}}
-<div class="rating strong">Strong Match</div>
+Strong Match
 {{else if ge .Score 40}}
-<div class="rating moderate">Moderate Match</div>
+Moderate Match
 {{else}}
-<div class="rating weak">Weak Match</div>
+Weak Match
 {{end}}
 
-<div class="kpi">
-<p>Matched: {{len .Matched}}</p>
-<p>Missing: {{len .Missing}}</p>
-<p>Suggestions: {{len .Suggestions}}</p>
+</strong>
+
+</p>
+
+<p>
+Job Type: {{.JobType}}
+</p>
+
+<p>
+Issues Found:
+{{add (len .Missing) (len .MissingSections)}}
+</p>
+
+</div>
+
+</div>
+
+<div class="report-card">
+
+<h3>REPORT BREAKDOWN</h3>
+
+<div class="breakdown-row">
+
+<span>TAILORING</span>
+
+<span>
+
+{{.TailoringScore}}/30
+
+</span>
+
+</div>
+
+<div class="breakdown-row">
+
+<span>CONTENT</span>
+
+<span>
+
+{{.ContentScore}}/30
+
+</span>
+
+</div>
+
+<div class="breakdown-row">
+
+<span>SECTIONS</span>
+
+<span>
+
+{{.SectionScore}}/20
+
+</span>
+
+</div>
+
+<div class="breakdown-row">
+
+<span>ATS ESSENTIALS</span>
+
+<span>
+
+{{.ATSScore}}/20
+
+</span>
+
 </div>
 
 </div>
 
-<div class="action-panel">
+<div class="report-grid">
 
-<h2>Recruiter Insights</h2>
+<div class="report-card">
+
+<h3>TOP STRENGTHS</h3>
 
 <ul>
-<li>Improve keyword alignment</li>
-<li>Add missing technical skills</li>
-<li>Strengthen leadership signals</li>
-<li>Align CV with job description</li>
-</ul>
 
-<button class="download-btn">
-Download Report (Coming Soon)
-</button>
+{{range $i,$v := .Matched}}
 
-</div>
+{{if lt $i 5}}
 
-</section>
+<li>✓ {{$v}}</li>
 
-<!-- RESULTS (CLEAN OXFORD STYLE) -->
-<section class="results">
-
-<div class="card">
-<h3>Match Overview</h3>
-<p><b>Job Type:</b> {{.JobType}}</p>
-<p><b>Score:</b> {{.Score}}%</p>
-</div>
-
-<div class="card">
-<h3>Top Strengths</h3>
-<ul>
-{{range .Matched}}
-<li>✓ {{.}}</li>
 {{end}}
+
+{{end}}
+
 </ul>
+
 </div>
 
-<div class="card">
-<h3>Key Gaps</h3>
+<div class="report-card">
+
+<h3>KEY GAPS</h3>
+
 <ul>
-{{range .Missing}}
-<li>✕ {{.}}</li>
+
+{{range $i,$v := .Missing}}
+
+{{if lt $i 5}}
+
+<li>✕ {{$v}}</li>
+
 {{end}}
+
+{{end}}
+
 </ul>
+
 </div>
 
-<div class="card">
-<h3>Recommendations</h3>
+<div class="report-card">
+
+<h3>SECTION CHECK</h3>
+
 <ul>
-{{range .Suggestions}}
-<li>• {{.}}</li>
+
+{{range $i,$v := .FoundSections}}
+
+{{if lt $i 5}}
+
+<li>✓ {{$v}}</li>
+
 {{end}}
+
+{{end}}
+
 </ul>
+
+</div>
+
+<div class="report-card">
+
+<h3>RECOMMENDATIONS</h3>
+
+<ul>
+
+{{range $i,$v := .Suggestions}}
+
+{{if lt $i 5}}
+
+<li>• {{$v}}</li>
+
+{{end}}
+
+{{end}}
+
+</ul>
+
+</div>
+
 </div>
 
 </section>
@@ -171,42 +283,29 @@ Download Report (Coming Soon)
 {{end}}
 
 <footer>
-<p>© 2026 AjiraScan • Built for ambitious professionals in Africa</p>
+
+© 2026 AjiraScan
+
 </footer>
 
 <script>
-function startLoading() {
 
-document.getElementById("analyzeBtn").innerText = "Analyzing...";
-document.getElementById("analyzeBtn").disabled = true;
+function startLoading(){
 
-document.getElementById("loadingBar").classList.remove("hidden");
+document
+.getElementById("analyzeBtn")
+.innerText="Analyzing...";
 
-let bar = document.getElementById("loadingBar");
+document
+.getElementById("analyzeBtn")
+.disabled=true;
 
-bar.style.width = "0%";
-
-let width = 0;
-
-let interval = setInterval(() => {
-if (width >= 90) clearInterval(interval);
-width += 5;
-bar.style.width = width + "%";
-}, 120);
+document
+.getElementById("loadingBar")
+.classList.remove("hidden");
 
 }
 
-window.onload = function () {
-
-let score = document.getElementById("scoreCircle");
-
-if (score) {
-let value = parseInt(score.innerText);
-let bar = document.getElementById("progressBar");
-bar.style.width = value + "%";
-}
-
-}
 </script>
 
 </body>

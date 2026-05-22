@@ -7,12 +7,52 @@ import (
 	"ajirascan/internal/ats"
 )
 
-// FIXED PATH: templates (NOT template)
+/*
+Template helper functions
+*/
+var funcs = template.FuncMap{
+
+	"add": func(a, b int) int {
+		return a + b
+	},
+
+	"verdict": func(score int) string {
+
+		switch {
+
+		case score >= 80:
+			return "Excellent Match"
+
+		case score >= 60:
+			return "Strong Match"
+
+		case score >= 40:
+			return "Moderate Match"
+
+		default:
+			return "Weak Match"
+		}
+	},
+}
+
+/*
+Load templates
+*/
 var tmpl = template.Must(
-	template.ParseFiles("templates/index.html"),
+
+	template.New(
+		"index.html",
+	).
+		Funcs(funcs).
+		ParseFiles(
+			"templates/index.html",
+		),
 )
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func HomeHandler(
+	w http.ResponseWriter,
+	r *http.Request,
+) {
 
 	if r.Method == http.MethodPost {
 
@@ -20,15 +60,52 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		job := r.FormValue("job")
 
 		if cv == "" || job == "" {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			http.Redirect(
+				w,
+				r,
+				"/",
+				http.StatusSeeOther,
+			)
+
 			return
 		}
 
-		result := ats.Analyze(cv, job)
+		result := ats.Analyze(
+			cv,
+			job,
+		)
 
-		_ = tmpl.Execute(w, result)
+		err := tmpl.Execute(
+			w,
+			result,
+		)
+
+		if err != nil {
+
+			http.Error(
+				w,
+				err.Error(),
+				http.StatusInternalServerError,
+			)
+
+			return
+		}
+
 		return
 	}
 
-	_ = tmpl.Execute(w, nil)
+	err := tmpl.Execute(
+		w,
+		nil,
+	)
+
+	if err != nil {
+
+		http.Error(
+			w,
+			err.Error(),
+			http.StatusInternalServerError,
+		)
+	}
 }
