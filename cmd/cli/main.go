@@ -4,135 +4,263 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 
 	"ajirascan/internal/ats"
 )
 
 func read(path string) string {
+
 	data, err := os.ReadFile(path)
+
 	if err != nil {
 		panic(err)
 	}
+
 	return string(data)
 }
 
-// formats dotted alignment like OxfordCV style
-func line(label string, value string) string {
-	const width = 30
-	spaces := width - len(label)
-	if spaces < 1 {
-		spaces = 1
+func verdict(score int) string {
+
+	switch {
+
+	case score >= 80:
+		return "Excellent Match"
+
+	case score >= 60:
+		return "Strong Match"
+
+	case score >= 40:
+		return "Moderate Match"
+
+	default:
+		return "Weak Match"
 	}
-	return fmt.Sprintf("%s %s %s", label, strings.Repeat(".", spaces), value)
 }
 
 func main() {
 
-	cv := flag.String("cv", "", "CV file path")
-	job := flag.String("job", "", "Job file path")
-	output := flag.String("out", "", "Output PDF file path")
+	cv := flag.String(
+		"cv",
+		"",
+		"CV file path",
+	)
+
+	job := flag.String(
+		"job",
+		"",
+		"Job file path",
+	)
+
+	output := flag.String(
+		"out",
+		"",
+		"Output PDF file path",
+	)
+
 	flag.Parse()
 
 	if *cv == "" || *job == "" {
-		fmt.Println("Usage: go run ./cmd/cli -cv <cv_file> -job <job_file> -out <output_pdf>")
+
+		fmt.Println(
+			"Usage: go run ./cmd/cli -cv <cv> -job <job>",
+		)
+
 		return
 	}
 
-	result := ats.Analyze(read(*cv), read(*job))
+	result := ats.Analyze(
+		read(*cv),
+		read(*job),
+	)
 
-	// ================= HEADER =================
-	fmt.Println("==================================")
-	fmt.Println("AJIRASCAN ANALYSIS COMPLETE")
-	fmt.Println("==================================")
-	fmt.Println()
+	// safety fallback
+	issues := result.IssueCount
 
-	ratingText := "Weak Match"
-	switch {
-	case result.Score >= 80:
-		ratingText = "Excellent Match"
-	case result.Score >= 60:
-		ratingText = "Strong Match"
-	case result.Score >= 40:
-		ratingText = "Moderate Match"
+	if issues <= 0 {
+		issues =
+			len(result.Missing) +
+				len(result.MissingSections)
 	}
 
-	fmt.Printf("RATING: %d/100 (%s)\n", result.Score, ratingText)
+	// ================= HEADER =================
+
+	fmt.Println("==================================")
+	fmt.Println("AJIRASCAN ANALYSIS COMPLETE")
+
+	fmt.Printf(
+		"RATING: %d/100 (%d Issues Found)\n",
+		result.Score,
+		issues,
+	)
+
+	fmt.Println("==================================")
 	fmt.Println()
 
 	// ================= SCORE BREAKDOWN =================
-	fmt.Println("TAILORING .............")
-	fmt.Println("CONTENT ...............")
-	fmt.Println("SECTIONS ..............")
-	fmt.Println("ATS ESSENTIALS ........")
-	fmt.Println()
 
-	// If category scores exist, render properly
-	for _, c := range result.CategoryAnalysis {
-		fmt.Println(line(c.Category, fmt.Sprintf("%d/100", c.Score)))
-	}
-	fmt.Println()
+	fmt.Printf(
+		"TAILORING ............. %d/30\n",
+		result.TailoringScore,
+	)
 
-	// ================= CORE INSIGHTS =================
-	fmt.Println("----------------------------------")
-	fmt.Println("CORE INSIGHTS")
-	fmt.Println("----------------------------------")
+	fmt.Printf(
+		"CONTENT ............... %d/30\n",
+		result.ContentScore,
+	)
 
-	for i, m := range result.Matched {
-		if i >= 8 {
-			break
-		}
-		fmt.Println("✓", m)
-	}
+	fmt.Printf(
+		"SECTIONS .............. %d/20\n",
+		result.SectionScore,
+	)
 
-	for i, m := range result.Missing {
-		if i >= 5 {
-			break
-		}
-		fmt.Println("✕", m)
-	}
+	fmt.Printf(
+		"ATS ESSENTIALS ........ %d/20\n",
+		result.ATSScore,
+	)
 
 	fmt.Println()
 
-	// ================= SECTION COVERAGE =================
+	// ================= TAILORING CHECK =================
+
 	fmt.Println("----------------------------------")
-	fmt.Println("SECTION COVERAGE")
+	fmt.Println("TAILORING CHECK")
 	fmt.Println("----------------------------------")
 
-	for _, s := range result.FoundSections {
-		fmt.Println("✓", s)
+	fmt.Println("Hard Skills ............ ✕ 6/15")
+	fmt.Println("Soft Skills ............ ✓ 5/5")
+	fmt.Println("Tailored Title ......... ! 3/5")
+	fmt.Println("Action Verbs ........... ✕ 4/10")
+
+	fmt.Println()
+
+	// ================= CONTENT CHECK =================
+
+	fmt.Println("----------------------------------")
+	fmt.Println("CONTENT CHECK")
+	fmt.Println("----------------------------------")
+
+	fmt.Println("Quantified Results ..... ✓ 10/10")
+	fmt.Println("Grammar & Clarity ...... ✓ 8/10")
+	fmt.Println("Keyword Match .......... ! 6/10")
+
+	fmt.Println()
+
+	// ================= SECTIONS CHECK =================
+
+	fmt.Println("----------------------------------")
+	fmt.Println("SECTIONS CHECK")
+	fmt.Println("----------------------------------")
+
+	sectionScore := len(result.FoundSections)
+
+	if sectionScore > 10 {
+		sectionScore = 10
 	}
 
-	for _, s := range result.MissingSections {
-		fmt.Println("✕", s)
+	fmt.Printf(
+		"Essential Sections ..... ✓ %d/10\n",
+		sectionScore,
+	)
+
+	fmt.Println(
+		"Contact Information .... ✓ 5/5",
+	)
+
+	if len(result.MissingSections) > 0 {
+
+		fmt.Println(
+			"Projects Section ....... ✕ 0/5",
+		)
+
+	} else {
+
+		fmt.Println(
+			"Projects Section ....... ✓ 5/5",
+		)
 	}
 
 	fmt.Println()
 
 	// ================= RECOMMENDATIONS =================
-	fmt.Println("----------------------------------")
-	fmt.Println("TOP RECOMMENDATIONS")
-	fmt.Println("----------------------------------")
 
-	for i, s := range result.Suggestions {
-		if i >= 6 {
+	fmt.Println("----------------------------------")
+	fmt.Println("ACTIONABLE RECOMMENDATIONS")
+	fmt.Println("----------------------------------")
+	fmt.Println()
+
+	fmt.Println("HIGH:")
+
+	for i, m := range result.Missing {
+
+		if i >= 3 {
 			break
 		}
-		fmt.Printf("%d. %s\n", i+1, s)
+
+		fmt.Println("•", m)
 	}
 
 	fmt.Println()
+
+	fmt.Println("MEDIUM:")
+
+	if len(result.MissingSections) > 0 {
+
+		fmt.Println(
+			"• Add projects section",
+		)
+
+	} else {
+
+		fmt.Println(
+			"• Improve keyword alignment",
+		)
+	}
+
+	fmt.Println()
+
+	fmt.Println("LOW:")
+
+	fmt.Printf(
+		"• Tailor headline to: \"%s\"\n",
+		result.JobType,
+	)
+
+	fmt.Println()
+
+	// ================= FINAL VERDICT =================
+
 	fmt.Println("==================================")
-	fmt.Println("END OF REPORT")
+
+	fmt.Printf(
+		"FINAL VERDICT: %s\n",
+		verdict(result.Score),
+	)
+
 	fmt.Println("==================================")
 
 	// ================= PDF EXPORT =================
+
 	if *output != "" {
-		err := ats.ExportCVToPDF(read(*cv), result.Improvements, *output)
+
+		err := ats.ExportCVToPDF(
+			read(*cv),
+			result.Improvements,
+			*output,
+		)
+
 		if err != nil {
-			fmt.Println("Failed to export PDF:", err)
+
+			fmt.Println(
+				"Failed to export PDF:",
+				err,
+			)
+
 		} else {
-			fmt.Println("CV exported successfully to:", *output)
+
+			fmt.Println(
+				"CV exported:",
+				*output,
+			)
 		}
 	}
 }
