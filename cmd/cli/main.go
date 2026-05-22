@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"ajirascan/internal/ats"
 )
@@ -16,7 +17,18 @@ func read(path string) string {
 	return string(data)
 }
 
+// formats dotted alignment like OxfordCV style
+func line(label string, value string) string {
+	const width = 30
+	spaces := width - len(label)
+	if spaces < 1 {
+		spaces = 1
+	}
+	return fmt.Sprintf("%s %s %s", label, strings.Repeat(".", spaces), value)
+}
+
 func main() {
+
 	cv := flag.String("cv", "", "CV file path")
 	job := flag.String("job", "", "Job file path")
 	output := flag.String("out", "", "Output PDF file path")
@@ -29,17 +41,13 @@ func main() {
 
 	result := ats.Analyze(read(*cv), read(*job))
 
-	// =========================
-	// CLEAN REPORT OUTPUT
-	// =========================
-
+	// ================= HEADER =================
 	fmt.Println("==================================")
 	fmt.Println("AJIRASCAN ANALYSIS COMPLETE")
 	fmt.Println("==================================")
 	fmt.Println()
 
-	// Score header
-	ratingText := ""
+	ratingText := "Weak Match"
 	switch {
 	case result.Score >= 80:
 		ratingText = "Excellent Match"
@@ -47,45 +55,49 @@ func main() {
 		ratingText = "Strong Match"
 	case result.Score >= 40:
 		ratingText = "Moderate Match"
-	default:
-		ratingText = "Weak Match"
 	}
 
 	fmt.Printf("RATING: %d/100 (%s)\n", result.Score, ratingText)
 	fmt.Println()
 
-	// Breakdown (simple weighted display placeholder)
-	fmt.Println("BREAKDOWN")
-	fmt.Println("- Tailoring:", result.Score*30/100, "/30")
-	fmt.Println("- Content:", result.Score*30/100, "/30")
-	fmt.Println("- Sections:", result.Score*20/100, "/20")
-	fmt.Println("- ATS Essentials:", result.Score*20/100, "/20")
+	// ================= SCORE BREAKDOWN =================
+	fmt.Println("TAILORING .............")
+	fmt.Println("CONTENT ...............")
+	fmt.Println("SECTIONS ..............")
+	fmt.Println("ATS ESSENTIALS ........")
 	fmt.Println()
 
-	// Key Insights (LIMIT noise)
-	fmt.Println("KEY INSIGHTS")
+	// If category scores exist, render properly
+	for _, c := range result.CategoryAnalysis {
+		fmt.Println(line(c.Category, fmt.Sprintf("%d/100", c.Score)))
+	}
+	fmt.Println()
 
-	insightLimit := 5
-	count := 0
-	for _, m := range result.Matched {
-		if count >= insightLimit {
+	// ================= CORE INSIGHTS =================
+	fmt.Println("----------------------------------")
+	fmt.Println("CORE INSIGHTS")
+	fmt.Println("----------------------------------")
+
+	for i, m := range result.Matched {
+		if i >= 8 {
 			break
 		}
 		fmt.Println("✓", m)
-		count++
 	}
 
-	for _, m := range result.Missing {
-		if count >= insightLimit {
+	for i, m := range result.Missing {
+		if i >= 5 {
 			break
 		}
 		fmt.Println("✕", m)
-		count++
 	}
+
 	fmt.Println()
 
-	// Sections coverage (clean)
-	fmt.Println("SECTIONS COVERAGE")
+	// ================= SECTION COVERAGE =================
+	fmt.Println("----------------------------------")
+	fmt.Println("SECTION COVERAGE")
+	fmt.Println("----------------------------------")
 
 	for _, s := range result.FoundSections {
 		fmt.Println("✓", s)
@@ -94,27 +106,19 @@ func main() {
 	for _, s := range result.MissingSections {
 		fmt.Println("✕", s)
 	}
+
 	fmt.Println()
 
-	// Top recommendations ONLY (no spam)
+	// ================= RECOMMENDATIONS =================
+	fmt.Println("----------------------------------")
 	fmt.Println("TOP RECOMMENDATIONS")
+	fmt.Println("----------------------------------")
 
-	recCount := 0
-	for _, s := range result.Suggestions {
-		if recCount >= 5 {
+	for i, s := range result.Suggestions {
+		if i >= 6 {
 			break
 		}
-		fmt.Printf("%d. %s\n", recCount+1, s)
-		recCount++
-	}
-
-	sectionSuggestions := ats.SectionSuggestions(result.MissingSections)
-	for _, s := range sectionSuggestions {
-		if recCount >= 5 {
-			break
-		}
-		recCount++
-		fmt.Printf("%d. %s\n", recCount, s)
+		fmt.Printf("%d. %s\n", i+1, s)
 	}
 
 	fmt.Println()
@@ -122,13 +126,12 @@ func main() {
 	fmt.Println("END OF REPORT")
 	fmt.Println("==================================")
 
-	// PDF export
+	// ================= PDF EXPORT =================
 	if *output != "" {
 		err := ats.ExportCVToPDF(read(*cv), result.Improvements, *output)
 		if err != nil {
 			fmt.Println("Failed to export PDF:", err)
 		} else {
-			fmt.Println()
 			fmt.Println("CV exported successfully to:", *output)
 		}
 	}
