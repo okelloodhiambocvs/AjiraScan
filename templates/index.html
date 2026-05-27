@@ -6,13 +6,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AjiraScan | ATS Intelligence</title>
+<title>AjiraScan | Premium ATS Intelligence</title>
 
 <link rel="stylesheet" href="/static/style.css">
 
 </head>
 
 <body>
+
+<!-- NAV -->
 
 <nav class="navbar">
 
@@ -29,7 +31,23 @@
 
 </div>
 
+<div class="nav-links">
+
+<a href="#">Features</a>
+<a href="#">ATS Checker</a>
+<a href="#">Pricing</a>
+
+</div>
+
+<button class="nav-btn">
+
+Get Started
+
+</button>
+
 </nav>
+
+<!-- HERO -->
 
 <section class="hero">
 
@@ -39,17 +57,73 @@ Trusted by Professionals • Recruiters • Job Seekers
 
 </div>
 
-<h1>Beat the ATS.</h1>
+<h1>
+
+Beat the ATS.<br>
+
+Land More Interviews.
+
+</h1>
 
 <p>
 
-Professional CV intelligence designed for serious applicants.
+AI-powered ATS intelligence that helps you optimize your CV against real job descriptions.
 
 </p>
 
+<div class="hero-actions">
+
+<button class="primary-btn">
+
+Analyze Resume
+
+</button>
+
+<button class="secondary-btn">
+
+Live Demo
+
+</button>
+
+</div>
+
+<div class="metrics">
+
+<div>
+
+<strong>50K+</strong>
+
+<p>CV Analyses</p>
+
+</div>
+
+<div>
+
+<strong>92%</strong>
+
+<p>Interview Readiness</p>
+
+</div>
+
+<div>
+
+<strong>4.9/5</strong>
+
+<p>User Satisfaction</p>
+
+</div>
+
+</div>
+
 </section>
 
-<section class="scanner-card">
+<!-- HERO GRID -->
+
+<section class="hero-grid">
+
+<!-- FORM -->
+
+<div class="scanner-card">
 
 <form
 id="atsForm"
@@ -80,9 +154,81 @@ Analyze Resume
 
 </button>
 
-<div id="loadingBar" class="loading-bar hidden"></div>
+<div
+id="loadingBar"
+class="loading-bar hidden"
+></div>
 
 </form>
+
+</div>
+
+<!-- LIVE PREVIEW -->
+
+<div class="preview-card">
+
+<div class="preview-header">
+
+LIVE ATS PREVIEW
+
+</div>
+
+<div class="preview-circle">
+
+92%
+
+</div>
+
+<h3>
+
+Excellent Match
+
+</h3>
+
+<p class="preview-job">
+
+Communications Officer
+
+</p>
+
+<div class="preview-list">
+
+<div class="preview-row">
+
+<span>Keyword Match</span>
+
+<span>88%</span>
+
+</div>
+
+<div class="preview-row">
+
+<span>Skills Alignment</span>
+
+<span>91%</span>
+
+</div>
+
+<div class="preview-row">
+
+<span>ATS Formatting</span>
+
+<span>95%</span>
+
+</div>
+
+</div>
+
+<div class="preview-tags">
+
+<span>Leadership</span>
+<span>Communication</span>
+<span>Media</span>
+<span>Strategy</span>
+
+</div>
+
+</div>
 
 </section>
 
@@ -134,150 +280,38 @@ RATING: {{.Score}}/100
 <div class="breakdown">
 
 <div class="line">
+
 <span>TAILORING</span>
+
 <span>{{.TailoringScore}}/30</span>
+
 </div>
 
 <div class="line">
+
 <span>CONTENT</span>
+
 <span>{{.ContentScore}}/30</span>
+
 </div>
 
 <div class="line">
+
 <span>SECTIONS</span>
+
 <span>{{.SectionScore}}/20</span>
+
 </div>
 
 <div class="line">
+
 <span>ATS ESSENTIALS</span>
+
 <span>{{.ATSScore}}/20</span>
-</div>
 
 </div>
 
 </div>
-
-</div>
-
-<div class="report-grid">
-
-<div class="report-card">
-
-<h3>TAILORING CHECK</h3>
-
-<ul>
-
-<li>Hard Skills ............ ✕ 6/15</li>
-
-<li>Soft Skills ............ ✓ 5/5</li>
-
-<li>Tailored Title ......... ! 3/5</li>
-
-<li>Action Verbs ........... ✕ 4/10</li>
-
-</ul>
-
-</div>
-
-<div class="report-card">
-
-<h3>CONTENT CHECK</h3>
-
-<ul>
-
-<li>Quantified Results ..... ✓ 10/10</li>
-
-<li>Grammar & Clarity ...... ✓ 8/10</li>
-
-<li>Keyword Match .......... ! 6/10</li>
-
-</ul>
-
-</div>
-
-<div class="report-card">
-
-<h3>SECTIONS CHECK</h3>
-
-<ul>
-
-<li>
-
-Essential Sections ..... ✓
-{{len .FoundSections}}/10
-
-</li>
-
-<li>
-
-Contact Information .... ✓ 5/5
-
-</li>
-
-<li>
-
-Projects Section .......
-
-{{if .MissingSections}}
-
-✕ 0/5
-
-{{else}}
-
-✓ 5/5
-
-{{end}}
-
-</li>
-
-</ul>
-
-</div>
-
-<div class="report-card">
-
-<h3>ACTIONABLE RECOMMENDATIONS</h3>
-
-<strong>HIGH</strong>
-
-<ul>
-
-{{range $i,$v := .Missing}}
-
-{{if lt $i 3}}
-
-<li>• {{$v}}</li>
-
-{{end}}
-
-{{end}}
-
-</ul>
-
-<strong>MEDIUM</strong>
-
-<ul>
-
-{{if .MissingSections}}
-
-<li>• Add projects section</li>
-
-{{end}}
-
-</ul>
-
-<strong>LOW</strong>
-
-<ul>
-
-<li>
-
-• Tailor headline to:
-"{{.JobType}}"
-
-</li>
-
-</ul>
 
 </div>
 
@@ -314,5 +348,4 @@ document
 </script>
 
 </body>
-
 </html>
