@@ -26,19 +26,25 @@
 <p>Premium ATS Intelligence</p>
 
 </div>
+
 </div>
+
 </nav>
 
 <section class="hero">
 
 <div class="hero-badge">
+
 Trusted by Professionals • Recruiters • Job Seekers
+
 </div>
 
 <h1>Beat the ATS.</h1>
 
 <p>
+
 Professional CV intelligence designed for serious applicants.
+
 </p>
 
 </section>
@@ -84,23 +90,33 @@ Analyze Resume
 
 <section class="report-wrapper">
 
-<div class="report-header">
+<div class="report-top">
 
 <div class="score-panel">
 
-<div class="score-circle" id="scoreCircle">
+<div class="score-circle">
 
 {{.Score}}%
 
 </div>
 
-<p class="score-label">
-ATS SCORE
+<h3>ATS SCORE</h3>
+
+<p class="verdict">
+
+{{verdict .Score}}
+
+</p>
+
+<p>
+
+Job Type: {{.JobType}}
+
 </p>
 
 </div>
 
-<div class="report-summary">
+<div class="report-main">
 
 <h2>
 
@@ -108,87 +124,36 @@ AJIRASCAN ANALYSIS COMPLETE
 
 </h2>
 
-<p>
+<p class="issues">
 
-Rating:
-<strong>
-
-{{if ge .Score 80}}
-Excellent Match
-{{else if ge .Score 60}}
-Strong Match
-{{else if ge .Score 40}}
-Moderate Match
-{{else}}
-Weak Match
-{{end}}
-
-</strong>
+RATING: {{.Score}}/100
+({{.IssueCount}} Issues Found)
 
 </p>
 
-<p>
-Job Type: {{.JobType}}
-</p>
+<div class="breakdown">
 
-<p>
-Issues Found:
-{{add (len .Missing) (len .MissingSections)}}
-</p>
-
-</div>
-
-</div>
-
-<div class="report-card">
-
-<h3>REPORT BREAKDOWN</h3>
-
-<div class="breakdown-row">
-
+<div class="line">
 <span>TAILORING</span>
-
-<span>
-
-{{.TailoringScore}}/30
-
-</span>
-
+<span>{{.TailoringScore}}/30</span>
 </div>
 
-<div class="breakdown-row">
-
+<div class="line">
 <span>CONTENT</span>
-
-<span>
-
-{{.ContentScore}}/30
-
-</span>
-
+<span>{{.ContentScore}}/30</span>
 </div>
 
-<div class="breakdown-row">
-
+<div class="line">
 <span>SECTIONS</span>
-
-<span>
-
-{{.SectionScore}}/20
-
-</span>
-
+<span>{{.SectionScore}}/20</span>
 </div>
 
-<div class="breakdown-row">
-
+<div class="line">
 <span>ATS ESSENTIALS</span>
+<span>{{.ATSScore}}/20</span>
+</div>
 
-<span>
-
-{{.ATSScore}}/20
-
-</span>
+</div>
 
 </div>
 
@@ -198,19 +163,17 @@ Issues Found:
 
 <div class="report-card">
 
-<h3>TOP STRENGTHS</h3>
+<h3>TAILORING CHECK</h3>
 
 <ul>
 
-{{range $i,$v := .Matched}}
+<li>Hard Skills ............ ✕ 6/15</li>
 
-{{if lt $i 5}}
+<li>Soft Skills ............ ✓ 5/5</li>
 
-<li>✓ {{$v}}</li>
+<li>Tailored Title ......... ! 3/5</li>
 
-{{end}}
-
-{{end}}
+<li>Action Verbs ........... ✕ 4/10</li>
 
 </ul>
 
@@ -218,59 +181,101 @@ Issues Found:
 
 <div class="report-card">
 
-<h3>KEY GAPS</h3>
+<h3>CONTENT CHECK</h3>
+
+<ul>
+
+<li>Quantified Results ..... ✓ 10/10</li>
+
+<li>Grammar & Clarity ...... ✓ 8/10</li>
+
+<li>Keyword Match .......... ! 6/10</li>
+
+</ul>
+
+</div>
+
+<div class="report-card">
+
+<h3>SECTIONS CHECK</h3>
+
+<ul>
+
+<li>
+
+Essential Sections ..... ✓
+{{len .FoundSections}}/10
+
+</li>
+
+<li>
+
+Contact Information .... ✓ 5/5
+
+</li>
+
+<li>
+
+Projects Section .......
+
+{{if .MissingSections}}
+
+✕ 0/5
+
+{{else}}
+
+✓ 5/5
+
+{{end}}
+
+</li>
+
+</ul>
+
+</div>
+
+<div class="report-card">
+
+<h3>ACTIONABLE RECOMMENDATIONS</h3>
+
+<strong>HIGH</strong>
 
 <ul>
 
 {{range $i,$v := .Missing}}
 
-{{if lt $i 5}}
-
-<li>✕ {{$v}}</li>
-
-{{end}}
-
-{{end}}
-
-</ul>
-
-</div>
-
-<div class="report-card">
-
-<h3>SECTION CHECK</h3>
-
-<ul>
-
-{{range $i,$v := .FoundSections}}
-
-{{if lt $i 5}}
-
-<li>✓ {{$v}}</li>
-
-{{end}}
-
-{{end}}
-
-</ul>
-
-</div>
-
-<div class="report-card">
-
-<h3>RECOMMENDATIONS</h3>
-
-<ul>
-
-{{range $i,$v := .Suggestions}}
-
-{{if lt $i 5}}
+{{if lt $i 3}}
 
 <li>• {{$v}}</li>
 
 {{end}}
 
 {{end}}
+
+</ul>
+
+<strong>MEDIUM</strong>
+
+<ul>
+
+{{if .MissingSections}}
+
+<li>• Add projects section</li>
+
+{{end}}
+
+</ul>
+
+<strong>LOW</strong>
+
+<ul>
+
+<li>
+
+• Tailor headline to:
+"{{.JobType}}"
+
+</li>
 
 </ul>
 
@@ -309,4 +314,5 @@ document
 </script>
 
 </body>
+
 </html>
