@@ -5,6 +5,8 @@ import "ajirascan/internal/text"
 type Result struct {
 	Score int
 
+	Breakdown ScoreBreakdown
+
 	Matched []string
 	Missing []string
 
@@ -20,13 +22,13 @@ type Result struct {
 
 	Improvements []CVImprovement
 
-	// NEW PROFESSIONAL REPORT DATA
+	// PROFESSIONAL REPORT DATA
 	IssueCount int
 
 	TailoringScore int
 	ContentScore   int
 	SectionScore   int
-	ATSScore        int
+	ATSScore       int
 }
 
 func Analyze(cv, job string) Result {
@@ -85,8 +87,18 @@ func Analyze(cv, job string) Result {
 		len(missing) +
 			len(sections.Missing)
 
+	// NEW SCORE BREAKDOWN FOUNDATION
+	breakdown := ScoreBreakdown{
+		OverallScore: score,
+		KeywordScore: score,
+		SectionScore: sectionScore,
+		SkillsScore:  0,
+	}
+
 	return Result{
 		Score: score,
+
+		Breakdown: breakdown,
 
 		Matched: matched,
 		Missing: missing,
