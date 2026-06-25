@@ -68,26 +68,24 @@ func Analyze(cv, job string) Result {
 
 	tailoring := 18
 	content := 24
-	sectionScore := 15
 	atsEssentials := 11
 
 	if len(matched) > 10 {
 		tailoring += 5
 	}
 
-	if len(sections.Found) >= 6 {
-		sectionScore += 3
-	}
-
 	if score >= 80 {
 		content += 4
 	}
+
+	// NEW DYNAMIC SECTION SCORE
+	sectionScore := CalculateSectionScore(sections)
 
 	issues :=
 		len(missing) +
 			len(sections.Missing)
 
-	// NEW SCORE BREAKDOWN FOUNDATION
+	// SCORE BREAKDOWN FOUNDATION
 	breakdown := ScoreBreakdown{
 		OverallScore: score,
 		KeywordScore: score,
