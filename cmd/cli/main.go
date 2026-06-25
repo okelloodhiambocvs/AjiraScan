@@ -82,6 +82,9 @@ func main() {
 				len(result.MissingSections)
 	}
 
+	// Convert section score (0-100) into display scale (0-20)
+	displaySectionScore := (result.SectionScore * 20) / 100
+
 	// ================= HEADER =================
 
 	fmt.Println("==================================")
@@ -94,6 +97,33 @@ func main() {
 	)
 
 	fmt.Println("==================================")
+	fmt.Println()
+
+	// ================= ATS BREAKDOWN =================
+
+	fmt.Println("ATS SCORE BREAKDOWN")
+	fmt.Println("----------------------------------")
+
+	fmt.Printf(
+		"Overall Score ........ %d\n",
+		result.Breakdown.OverallScore,
+	)
+
+	fmt.Printf(
+		"Keyword Score ........ %d\n",
+		result.Breakdown.KeywordScore,
+	)
+
+	fmt.Printf(
+		"Section Score ........ %d\n",
+		result.Breakdown.SectionScore,
+	)
+
+	fmt.Printf(
+		"Skills Score ......... %d\n",
+		result.Breakdown.SkillsScore,
+	)
+
 	fmt.Println()
 
 	// ================= SCORE BREAKDOWN =================
@@ -110,7 +140,7 @@ func main() {
 
 	fmt.Printf(
 		"SECTIONS .............. %d/20\n",
-		result.SectionScore,
+		displaySectionScore,
 	)
 
 	fmt.Printf(

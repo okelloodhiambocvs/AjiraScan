@@ -81,14 +81,21 @@ func Analyze(cv, job string) Result {
 	// DYNAMIC SECTION SCORE
 	sectionScore := CalculateSectionScore(sections)
 
-	// NEW DYNAMIC SKILLS SCORE
+	// DYNAMIC SKILLS SCORE
 	skillsScore := CalculateSkillsScore(
 		matched,
 		missing,
 	)
 
+	// ACTIONABLE ISSUE COUNT
+	keywordIssues := len(missing)
+
+	if keywordIssues > 5 {
+		keywordIssues = 5
+	}
+
 	issues :=
-		len(missing) +
+		keywordIssues +
 			len(sections.Missing)
 
 	// SCORE BREAKDOWN

@@ -41,10 +41,13 @@ func FormatReport(r Result) string {
 
 	// SCORE BLOCKS
 
-	tailoring := (r.Score * 30) / 100
-	content := (r.Score * 30) / 100
-	sections := (r.Score * 20) / 100
-	essentials := (r.Score * 20) / 100
+	tailoring := r.TailoringScore
+	content := r.ContentScore
+
+	// Convert dynamic 0-100 section score into 0-20 display scale
+	sections := (r.SectionScore * 20) / 100
+
+	essentials := r.ATSScore
 
 	b.WriteString(
 		fmt.Sprintf(
