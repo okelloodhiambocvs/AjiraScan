@@ -43,6 +43,10 @@ func Analyze(cv, job string) Result {
 		jobTokens,
 	)
 
+	// FILTER LOW-VALUE ATS WORDS
+	matched = FilterKeywords(matched)
+	missing = FilterKeywords(missing)
+
 	// PHRASE MATCHING
 	matchedPhrases, missingPhrases := MatchPhrases(
 		cv,
