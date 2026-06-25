@@ -43,7 +43,7 @@ func Analyze(cv, job string) Result {
 		jobTokens,
 	)
 
-	// NEW: PHRASE MATCHING
+	// PHRASE MATCHING
 	matchedPhrases, missingPhrases := MatchPhrases(
 		cv,
 		job,
@@ -66,7 +66,24 @@ func Analyze(cv, job string) Result {
 		matched,
 	)
 
+	// STANDARD KEYWORD SUGGESTIONS
 	suggestions := Suggestions(missing)
+
+	// PHRASE-BASED SUGGESTIONS (HIGHER VALUE)
+	phraseSuggestions := PhraseSuggestions(
+		missingPhrases,
+	)
+
+	// PRIORITIZE PHRASE SUGGESTIONS
+	suggestions = append(
+		phraseSuggestions,
+		suggestions...,
+	)
+
+	// LIMIT TOTAL RECOMMENDATIONS
+	if len(suggestions) > 5 {
+		suggestions = suggestions[:5]
+	}
 
 	improvements := ImproveCV(cv)
 
@@ -87,7 +104,7 @@ func Analyze(cv, job string) Result {
 	// DYNAMIC SECTION SCORE
 	sectionScore := CalculateSectionScore(sections)
 
-	// NEW: PHRASE-AWARE SKILLS SCORE
+	// PHRASE-AWARE SKILLS SCORE
 	skillsScore := CalculateSkillsScore(
 		matched,
 		missing,

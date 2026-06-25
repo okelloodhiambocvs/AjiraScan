@@ -220,13 +220,17 @@ func main() {
 
 	fmt.Println("HIGH:")
 
-	for i, m := range result.Missing {
+	for i, suggestion := range result.Suggestions {
 
-		if i >= 3 {
+		if i >= 5 {
 			break
 		}
 
-		fmt.Println("•", m)
+		fmt.Println("•", suggestion)
+	}
+
+	if len(result.Suggestions) == 0 {
+		fmt.Println("• No critical recommendations found")
 	}
 
 	fmt.Println()
