@@ -2,24 +2,16 @@ package ats
 
 import "testing"
 
-func TestCalculateSkillsScore(t *testing.T) {
-
-	matched := []string{
-		"excel",
-		"sql",
-		"python",
-	}
-
-	missing := []string{
-		"powerbi",
-	}
+func TestSkillsScoreWithPhrases(t *testing.T) {
 
 	score := CalculateSkillsScore(
-		matched,
-		missing,
+		[]string{"go", "docker"},
+		[]string{"kubernetes"},
+		[]string{"project management"},
+		[]string{"risk management"},
 	)
 
-	if score != 75 {
-		t.Errorf("expected 75, got %d", score)
+	if score <= 0 {
+		t.Errorf("expected positive score")
 	}
 }

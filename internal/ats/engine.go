@@ -43,6 +43,12 @@ func Analyze(cv, job string) Result {
 		jobTokens,
 	)
 
+	// NEW: PHRASE MATCHING
+	matchedPhrases, missingPhrases := MatchPhrases(
+		cv,
+		job,
+	)
+
 	sections := DetectSections(cv)
 
 	frequency := AnalyzeKeywordFrequency(cvTokens)
@@ -81,10 +87,12 @@ func Analyze(cv, job string) Result {
 	// DYNAMIC SECTION SCORE
 	sectionScore := CalculateSectionScore(sections)
 
-	// DYNAMIC SKILLS SCORE
+	// NEW: PHRASE-AWARE SKILLS SCORE
 	skillsScore := CalculateSkillsScore(
 		matched,
 		missing,
+		matchedPhrases,
+		missingPhrases,
 	)
 
 	// ACTIONABLE ISSUE COUNT
