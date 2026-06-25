@@ -29,21 +29,29 @@ type Result struct {
 	ContentScore   int
 	SectionScore   int
 	ATSScore       int
+
+	// NEW
+	AchievementCount int
 }
 
 func Analyze(cv, job string) Result {
 
 	jobType := DetectJobType(job)
 
-	cvTokens := text.Tokenize(text.Normalize(cv))
-	jobTokens := text.Tokenize(text.Normalize(job))
+	cvTokens := text.Tokenize(
+		text.Normalize(cv),
+	)
+
+	jobTokens := text.Tokenize(
+		text.Normalize(job),
+	)
 
 	matched, missing := MatchKeywords(
 		cvTokens,
 		jobTokens,
 	)
 
-	// FILTER LOW-VALUE ATS WORDS
+	// FILTER LOW-VALUE WORDS
 	matched = FilterKeywords(matched)
 	missing = FilterKeywords(missing)
 
@@ -55,9 +63,13 @@ func Analyze(cv, job string) Result {
 
 	sections := DetectSections(cv)
 
-	frequency := AnalyzeKeywordFrequency(cvTokens)
+	frequency := AnalyzeKeywordFrequency(
+		cvTokens,
+	)
 
-	categories := AnalyzeCategories(cvTokens)
+	categories := AnalyzeCategories(
+		cvTokens,
+	)
 
 	score := WeightedScore(
 		matched,
@@ -70,45 +82,110 @@ func Analyze(cv, job string) Result {
 		matched,
 	)
 
-	// STANDARD KEYWORD SUGGESTIONS
-	suggestions := Suggestions(missing)
+	// =========================
+	// RECOMMENDATIONS
+	// =========================
 
-	// PHRASE-BASED SUGGESTIONS (HIGHER VALUE)
 	phraseSuggestions := PhraseSuggestions(
 		missingPhrases,
 	)
 
-	// PRIORITIZE PHRASE SUGGESTIONS
-	suggestions = append(
-		phraseSuggestions,
-		suggestions...,
-	)
+	var suggestions []string
 
-	// LIMIT TOTAL RECOMMENDATIONS
+	if len(phraseSuggestions) > 0 {
+		suggestions = phraseSuggestions
+	} else {
+		suggestions = Suggestions(missing)
+	}
+
 	if len(suggestions) > 5 {
 		suggestions = suggestions[:5]
 	}
 
 	improvements := ImproveCV(cv)
 
-	// PROFESSIONAL SCORING
+	// =========================
+	// ACHIEVEMENTS
+	// =========================
 
-	tailoring := 18
-	content := 24
-	atsEssentials := 11
+	achievementCount := CountAchievements(cv)
 
-	if len(matched) > 10 {
+	// =========================
+	// TAILORING SCORE (30)
+	// =========================
+
+	tailoring := 15
+
+	if len(matched) >= 5 {
 		tailoring += 5
+	}
+
+	if len(matched) >= 10 {
+		tailoring += 5
+	}
+
+	if len(matchedPhrases) >= 2 {
+		tailoring += 5
+	}
+
+	if tailoring > 30 {
+		tailoring = 30
+	}
+
+	// =========================
+	// CONTENT SCORE (30)
+	// =========================
+
+	content := 18
+
+	if achievementCount >= 3 {
+		content += 12
+	} else if achievementCount >= 1 {
+		content += 6
 	}
 
 	if score >= 80 {
 		content += 4
 	}
 
-	// DYNAMIC SECTION SCORE
-	sectionScore := CalculateSectionScore(sections)
+	if content > 30 {
+		content = 30
+	}
 
-	// PHRASE-AWARE SKILLS SCORE
+	// =========================
+	// SECTION SCORE (100)
+	// =========================
+
+	sectionScore := CalculateSectionScore(
+		sections,
+	)
+
+	// =========================
+	// ATS ESSENTIALS (20)
+	// =========================
+
+	atsEssentials := 10
+
+	if len(sections.Found) >= 5 {
+		atsEssentials += 4
+	}
+
+	if achievementCount >= 3 {
+		atsEssentials += 3
+	}
+
+	if len(matchedPhrases) >= 2 {
+		atsEssentials += 3
+	}
+
+	if atsEssentials > 20 {
+		atsEssentials = 20
+	}
+
+	// =========================
+	// SKILLS SCORE
+	// =========================
+
 	skillsScore := CalculateSkillsScore(
 		matched,
 		missing,
@@ -116,18 +193,28 @@ func Analyze(cv, job string) Result {
 		missingPhrases,
 	)
 
-	// ACTIONABLE ISSUE COUNT
-	keywordIssues := len(missing)
+	// =========================
+	// ISSUE COUNT
+	// =========================
 
-	if keywordIssues > 5 {
-		keywordIssues = 5
+	issues := 0
+
+	if len(missing) > 0 {
+		issues += min(3, len(missing))
 	}
 
-	issues :=
-		keywordIssues +
-			len(sections.Missing)
+	if len(missingPhrases) > 0 {
+		issues += min(2, len(missingPhrases))
+	}
 
+	if len(sections.Missing) > 0 {
+		issues += min(3, len(sections.Missing))
+	}
+
+	// =========================
 	// SCORE BREAKDOWN
+	// =========================
+
 	breakdown := ScoreBreakdown{
 		OverallScore: score,
 		KeywordScore: score,
@@ -161,6 +248,8 @@ func Analyze(cv, job string) Result {
 		ContentScore:   content,
 		SectionScore:   sectionScore,
 		ATSScore:       atsEssentials,
+
+		AchievementCount: achievementCount,
 	}
 }
 
