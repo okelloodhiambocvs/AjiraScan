@@ -4,19 +4,22 @@ import (
 	"context"
 	"flag"
 	"log"
-	"os"
 	"time"
 
+	"ajirascan/internal/config"
 	"ajirascan/internal/database"
 )
 
 func main() {
 	directory := flag.String("dir", "migrations", "migration directory")
 	flag.Parse()
-	url := os.Getenv("DATABASE_URL")
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	db, err := database.Open(ctx, url)
+	db, err := database.Open(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
