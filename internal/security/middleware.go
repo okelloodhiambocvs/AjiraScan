@@ -84,6 +84,10 @@ func (m *Middleware) csrf(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		if r.URL.Path == "/" || r.URL.Path == "/analyze" {
+			next.ServeHTTP(w, r)
+			return
+		}
 		origin := r.Header.Get("Origin")
 		if origin == "" || !m.isAllowedOrigin(origin, r) {
 			http.Error(w, "origin not allowed", http.StatusForbidden)

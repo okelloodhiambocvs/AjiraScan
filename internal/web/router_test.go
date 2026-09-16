@@ -38,3 +38,13 @@ func TestAnalysisRendersAZeroScoreWithExplanation(t *testing.T) {
 		t.Fatal("expected zero-score analysis explanation to render")
 	}
 }
+
+func TestMarketingPagesAreRegistered(t *testing.T) {
+	for _, path := range []string{"/features", "/pricing"} {
+		response := httptest.NewRecorder()
+		NewRouter(nil).ServeHTTP(response, httptest.NewRequest(http.MethodGet, path, nil))
+		if response.Code != http.StatusOK {
+			t.Fatalf("expected %s to render, got %d", path, response.Code)
+		}
+	}
+}

@@ -27,6 +27,8 @@ func NewRouter(db *database.DB, options ...RouterOptions) http.Handler {
 	mux.HandleFunc("/analyze", HomeHandler)
 	mux.Handle("/signin", PageHandler(templatePath("signin.html")))
 	mux.Handle("/signup", PageHandler(templatePath("signup.html")))
+	mux.Handle("/features", PageHandler(templatePath("features.html")))
+	mux.Handle("/pricing", PageHandler(templatePath("pricing.html")))
 	service := auth.Service{SessionTTL: settings.SessionTTL}
 	if db != nil {
 		service.DB = db.SQL

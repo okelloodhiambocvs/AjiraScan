@@ -50,9 +50,20 @@ func TestMiddlewareRejectsMutationWithoutOrigin(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	}))
 	response := httptest.NewRecorder()
-	handler.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "http://localhost:8080/analyze", nil))
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "http://localhost:8080/api/v1/auth/login", nil))
 	if response.Code != http.StatusForbidden {
 		t.Fatalf("expected mutation without Origin to be rejected, got %d", response.Code)
+	}
+}
+
+func TestMiddlewareAllowsPublicAnalysisWithoutOrigin(t *testing.T) {
+	handler := New(100, 10, nil, slog.Default()).Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "http://localhost:8080/analyze", nil))
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected public analysis request to be allowed, got %d", response.Code)
 	}
 }
 
