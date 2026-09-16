@@ -8,9 +8,9 @@
 </head>
 <body>
 <nav class="navbar">
-  <a class="wordmark" href="/">AJIRASCAN</a>
+  <a class="brand-logo" href="/" aria-label="AjiraScan home"><img src="/static/images/ajirascan-logo.png" alt="AjiraScan"></a>
   <div class="nav-links">
-    <a href="#ats-checker">ATS checker</a>
+    <a href="/">Home</a><a href="#features">Features</a><a href="#ats-checker">ATS Analyzer</a><a href="/about">About Us</a><a href="#pricing">Pricing</a>
     <a href="/signup">Create account</a>
     <a class="nav-btn" href="/signin">Sign in</a>
   </div>
@@ -27,7 +27,7 @@
     </div>
   </section>
 
-  <section id="ats-checker" class="hero-grid">
+  <section id="features" class="hero-grid">
     <div class="scanner-card">
       <h2>CV comparison</h2>
       <p class="supporting-copy">Paste only information you are authorized to share. We do not use this form to make employment decisions.</p>
@@ -52,6 +52,7 @@
     </aside>
   </section>
 
+  <section id="ats-checker" class="hero-grid">
   {{if .Score}}
   <section class="report-wrapper" aria-live="polite">
     <div class="report-top">
@@ -74,11 +75,11 @@
       </div>
     </div>
   </section>
-  {{end}}
+  {{end}}</section>
 </main>
 
 <footer>
-  <nav aria-label="Footer">
+  <a class="brand-logo footer-logo" href="/"><img src="/static/images/ajirascan-logo.png" alt="AjiraScan"></a><nav aria-label="Footer">
     <a href="/about">About us</a>
     <a href="/terms">Terms and conditions</a>
     <a href="/privacy">Privacy policy</a>
