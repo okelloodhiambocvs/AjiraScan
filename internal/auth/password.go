@@ -16,6 +16,10 @@ const (
 	argonMemory  uint32 = 64 * 1024
 	argonThreads uint8  = 2
 	argonKeyLen  uint32 = 32
+	minSaltBytes        = 16
+	maxSaltBytes        = 64
+	minHashBytes        = 16
+	maxHashBytes        = 64
 )
 
 func HashPassword(password string) (string, error) {
@@ -32,7 +36,7 @@ func HashPassword(password string) (string, error) {
 
 func VerifyPassword(encoded, password string) (bool, error) {
 	parts := strings.Split(encoded, "$")
-	if len(parts) != 6 || parts[0] != "argon2id" || parts[1] != "v=19" {
+	if len(parts) != 5 || parts[0] != "argon2id" || parts[1] != "v=19" {
 		return false, errors.New("invalid password hash format")
 	}
 	var memory, timeCost uint32
@@ -40,13 +44,22 @@ func VerifyPassword(encoded, password string) (bool, error) {
 	if _, err := fmt.Sscanf(parts[2], "m=%d,t=%d,p=%d", &memory, &timeCost, &threads); err != nil {
 		return false, errors.New("invalid password hash parameters")
 	}
-	salt, err := base64.RawStdEncoding.DecodeString(parts[4])
+	if memory != argonMemory || timeCost != argonTime || threads != argonThreads {
+		return false, errors.New("unsupported password hash parameters")
+	}
+	salt, err := base64.RawStdEncoding.DecodeString(parts[3])
 	if err != nil {
 		return false, errors.New("invalid password hash salt")
 	}
-	expected, err := base64.RawStdEncoding.DecodeString(parts[5])
+	if len(salt) < minSaltBytes || len(salt) > maxSaltBytes {
+		return false, errors.New("invalid password hash salt length")
+	}
+	expected, err := base64.RawStdEncoding.DecodeString(parts[4])
 	if err != nil {
 		return false, errors.New("invalid password hash digest")
+	}
+	if len(expected) < minHashBytes || len(expected) > maxHashBytes {
+		return false, errors.New("invalid password hash digest length")
 	}
 	actual := argon2.IDKey([]byte(password), salt, timeCost, memory, threads, uint32(len(expected)))
 	return subtle.ConstantTimeCompare(expected, actual) == 1, nil
