@@ -1,105 +1,29 @@
-## AjiraScan
+# AJIRASCAN
 
-AjiraScan is a Go-powered ATS (Applicant Tracking System) analysis platform built to help job seekers optimize their CVs for modern recruitment systems.
+AJIRASCAN is a Go modular-monolith foundation for a privacy-aware career and recruitment platform. The runnable UI is a deterministic CV-to-job comparison demo, not an AI hiring decision system. Do not use it to automatically reject, shortlist, hire, or make similarly significant employment decisions.
 
-The platform analyzes resumes against job descriptions, calculates ATS compatibility scores, identifies missing keywords, and provides practical recommendations to improve interview chances.
+## Implemented foundation
 
-AjiraScan is designed with the Kenyan and African job market in mind, helping graduates, professionals, NGO applicants, and corporate job seekers better align their applications with employer expectations.
+* Deterministic ATS comparison and CLI analysis, with scores bounded to 0-100.
+* PostgreSQL migration runner and initial schema for users, organizations, applicant profiles, jobs, applications, documents, analysis, interviews, subscriptions, payments, consents, audit/security events and deletion requests.
+* Configuration, Argon2id password primitives, opaque hashed sessions, roles, tenant transaction scope and audit event writer.
+* Security middleware for timeouts, bounded request bodies, response headers, configured-origin CORS, rate limiting, request IDs and panic recovery.
+* Document validation/quarantine interfaces and disabled-by-default AI, billing, object-storage and malware-scanner adapters.
 
-## Features
+## Start locally
 
-- ATS Resume Scoring
-- Keyword Matching
-- Missing Skills Detection
-- Resume Optimization Suggestions
-- Job Description Analysis
-- Recruiter-Oriented Scoring Engine
-- Fast CLI-Based Processing
-- Built with Go for performance and scalability
+1. Copy .env.example to .env and set a local PostgreSQL DATABASE_URL.
+2. Run migrations: go run ./cmd/migrate
+3. Run the server: go run ./cmd/web
+4. Open http://127.0.0.1:8080. Health: /healthz. Readiness: /readyz.
 
-## Project Structure
+Checks:
 
-```bash
-ajirascan/
-│
-├── cmd/
-│   └── cli/
-│       └── main.go
-│
-├── internal/
-│   ├── ats/
-│   │   ├── engine.go
-│   │   ├── matcher.go
-│   │   ├── scorer.go
-│   │   └── *_test.go
-│   │
-│   └── text/
-│       ├── normalize.go
-│       ├── tokenize.go
-│       ├── frequency.go
-│       └── *_test.go
-│
-├── sample_cv.txt
-├── sample_job.txt
-├── go.mod
-└── README.md
-```
+    go test ./...
+    go vet ./...
 
-## Running the Project
+## Production boundary
 
-## Clone the repository
+Production requires TLS/WAF, PostgreSQL, managed secrets, private object storage, malware scanning, workers, email/calendar/AI/payment providers, monitoring, backups and external legal/privacy governance. No credentials are committed or invented. The sample CV is synthetic.
 
-```bash
-git clone <repository-url>
-cd ajirascan
-```
-
-## Run Tests
-
-```bash
-go test ./...
-```
-
-## Run ATS Analysis
-
-```bash
-go run ./cmd/cli -cv sample_cv.txt -job sample_job.txt
-```
-
-## Example Output
-
-```text
-====== ATS RESULT ======
-Score: 65
-Matched: [go docker backend]
-Missing: [kubernetes leadership communication]
-```
-
-## MVP Vision
-
-AjiraScan aims to become a career intelligence platform that helps users:
-
-- Understand ATS systems
-- Improve CV quality
-- Tailor resumes to jobs
-- Increase interview opportunities
-- Prepare competitive job applications
-
-## Future Features
-
-- AI CV Recommendations
-- PDF/DOCX Parsing
-- Web Dashboard
-- User Accounts
-- NGO/UN Job Optimization
-- LinkedIn Analyzer
-- Cover Letter Generator
-- Recruiter Dashboard
-- API Integration
-
-## Tech Stack
-
-- Go (Golang)
-- CLI-first Architecture
-- Modular Internal Packages
-- Test-Driven Development
+Read docs/ARCHITECTURE.md, docs/DATABASE.md, docs/API.md, docs/SECURITY.md, docs/PRIVACY.md, docs/AI_GOVERNANCE.md, docs/PAYMENTS.md, docs/DEPLOYMENT.md and docs/PRODUCTION_READINESS.md.
