@@ -22,10 +22,9 @@ func NewRouter(db *database.DB) http.Handler {
 	mux.Handle("/api/v1/auth/register", AuthHandler(service))
 	mux.Handle("/api/v1/auth/login", AuthHandler(service))
 	mux.Handle("/api/v1/auth/logout", AuthHandler(service))
-	mux.Handle("/about", PageHandler("templates/index.html"))
-	mux.Handle("/terms", PageHandler("templates/index.html"))
-	mux.Handle("/privacy", PageHandler("templates/index.html"))
-	mux.Handle("/cookies", PageHandler("templates/index.html"))
+	for path, page := range legalPages() {
+		mux.Handle(path, LegalHandler(page))
+	}
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
