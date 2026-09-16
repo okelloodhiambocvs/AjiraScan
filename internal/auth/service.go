@@ -11,6 +11,8 @@ import (
 var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrDuplicateAccount   = errors.New("account already exists")
+	ErrUnauthenticated    = errors.New("unauthenticated")
+	ErrForbidden          = errors.New("forbidden")
 )
 
 type Registration struct {
@@ -20,6 +22,49 @@ type Registration struct {
 	Email            string
 	Password         string
 	OrganizationName string
+}
+
+func (s Service) Authenticate(ctx context.Context, token string) (Principal, error) {
+	if s.DB == nil || token == "" {
+		return Principal{}, ErrUnauthenticated
+	}
+	var principal Principal
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT sessions.user_id
+		FROM sessions
+		JOIN users ON users.id = sessions.user_id
+		WHERE sessions.token_hash = $1
+		  AND sessions.expires_at > now()
+		  AND sessions.revoked_at IS NULL
+		  AND users.deleted_at IS NULL`, HashSessionToken(token)).Scan(&principal.UserID)
+	if errors.Is(err, sql.ErrNoRows) {
+		return Principal{}, ErrUnauthenticated
+	}
+	if err != nil {
+		return Principal{}, err
+	}
+	return principal, nil
+}
+
+func (s Service) OrganizationRole(ctx context.Context, principal Principal, organizationID string) (Role, error) {
+	if s.DB == nil || principal.UserID == "" || organizationID == "" {
+		return "", ErrUnauthenticated
+	}
+	var role Role
+	err := s.DB.QueryRowContext(ctx,
+		"SELECT role FROM organization_members WHERE organization_id=$1 AND user_id=$2",
+		organizationID, principal.UserID,
+	).Scan(&role)
+	if errors.Is(err, sql.ErrNoRows) {
+		return "", ErrForbidden
+	}
+	if err != nil {
+		return "", err
+	}
+	if !role.Valid() {
+		return "", ErrForbidden
+	}
+	return role, nil
 }
 
 type Service struct {
