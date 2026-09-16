@@ -24,16 +24,16 @@ var IgnoredKeywords = map[string]bool{
 	"duties":           true,
 
 	// Generic work verbs
-	"work":     true,
-	"working":  true,
-	"manage":   true,
-	"managed":  true,
-	"support":  true,
-	"provide":  true,
-	"provided": true,
-	"assist":   true,
+	"work":      true,
+	"working":   true,
+	"manage":    true,
+	"managed":   true,
+	"support":   true,
+	"provide":   true,
+	"provided":  true,
+	"assist":    true,
 	"assisting": true,
-	"ensure":   true,
+	"ensure":    true,
 
 	// Geographic / organization noise
 	"kenya":  true,

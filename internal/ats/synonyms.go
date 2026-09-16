@@ -1,16 +1,16 @@
 package ats
 
 var Synonyms = map[string]string{
-	"aml": "anti_money_laundering",
+	"aml":                   "anti_money_laundering",
 	"anti_money_laundering": "anti_money_laundering",
 
-	"kyc": "know_your_customer",
+	"kyc":                "know_your_customer",
 	"know_your_customer": "know_your_customer",
 
-	"hr": "human_resources",
+	"hr":              "human_resources",
 	"human_resources": "human_resources",
 
-	"it": "information_technology",
+	"it":                     "information_technology",
 	"information_technology": "information_technology",
 }
 

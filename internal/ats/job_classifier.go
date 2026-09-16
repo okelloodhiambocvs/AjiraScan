@@ -5,11 +5,11 @@ import "ajirascan/internal/text"
 type JobType string
 
 const (
-	TechJob        JobType = "TECH"
-	NGOJob         JobType = "NGO"
+	TechJob          JobType = "TECH"
+	NGOJob           JobType = "NGO"
 	CommunicationJob JobType = "COMMUNICATION"
-	BusinessJob    JobType = "BUSINESS"
-	UnknownJob     JobType = "UNKNOWN"
+	BusinessJob      JobType = "BUSINESS"
+	UnknownJob       JobType = "UNKNOWN"
 )
 
 var jobIndicators = map[JobType][]string{

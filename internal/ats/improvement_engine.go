@@ -3,9 +3,9 @@ package ats
 import "strings"
 
 type CVImprovement struct {
-	Original   string
-	Improved   string
-	Reason     string
+	Original string
+	Improved string
+	Reason   string
 }
 
 func ImproveCV(cv string) []CVImprovement {

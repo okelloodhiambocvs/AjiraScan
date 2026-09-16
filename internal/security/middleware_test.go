@@ -1,0 +1,32 @@
+package security
+
+import (
+	"log/slog"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+)
+
+func TestMiddlewareAddsSecurityHeaders(t *testing.T) {
+	handler := New(100, 10, nil, slog.Default()).Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	if response.Header().Get("Content-Security-Policy") == "" || response.Header().Get("X-Content-Type-Options") != "nosniff" {
+		t.Fatal("expected response security headers")
+	}
+}
+
+func TestMiddlewareRejectsUnknownOrigin(t *testing.T) {
+	handler := New(100, 10, []string{"https://app.example.test"}, slog.Default()).Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	request.Header.Set("Origin", "https://evil.example.test")
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected forbidden origin, got %d", response.Code)
+	}
+}

@@ -62,5 +62,8 @@ func ApplyJobContextBoost(score int, jobType JobType, matched []string) int {
 		}
 	}
 
+	if score+boost > 100 {
+		return 100
+	}
 	return score + boost
 }
