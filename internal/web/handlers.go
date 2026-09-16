@@ -3,6 +3,7 @@ package web
 import (
 	"html/template"
 	"net/http"
+	"strings"
 
 	"ajirascan/internal/ats"
 )
@@ -54,20 +55,29 @@ func HomeHandler(
 	r *http.Request,
 ) {
 
-	if r.Method == http.MethodPost {
+	switch r.Method {
+	case http.MethodGet:
+		renderHome(w, nil)
+		return
+	case http.MethodPost:
+		if !strings.HasPrefix(r.Header.Get("Content-Type"), "application/x-www-form-urlencoded") {
+			http.Error(w, "unsupported content type", http.StatusUnsupportedMediaType)
+			return
+		}
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "invalid form submission", http.StatusBadRequest)
+			return
+		}
 
-		cv := r.FormValue("cv")
-		job := r.FormValue("job")
+		cv := r.PostForm.Get("cv")
+		job := r.PostForm.Get("job")
 
-		if cv == "" || job == "" {
-
-			http.Redirect(
-				w,
-				r,
-				"/",
-				http.StatusSeeOther,
-			)
-
+		if strings.TrimSpace(cv) == "" || strings.TrimSpace(job) == "" {
+			http.Error(w, "CV and job description are required", http.StatusBadRequest)
+			return
+		}
+		if len(cv) > 256<<10 || len(job) > 256<<10 {
+			http.Error(w, "CV and job description must each be at most 256 KiB", http.StatusRequestEntityTooLarge)
 			return
 		}
 
@@ -76,36 +86,21 @@ func HomeHandler(
 			job,
 		)
 
-		err := tmpl.Execute(
-			w,
-			result,
-		)
-
-		if err != nil {
-
-			http.Error(
-				w,
-				err.Error(),
-				http.StatusInternalServerError,
-			)
-
-			return
-		}
-
+		renderHome(w, result)
+		return
+	default:
+		w.Header().Set("Allow", "GET, POST")
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+}
 
+func renderHome(w http.ResponseWriter, data any) {
 	err := tmpl.Execute(
 		w,
-		nil,
+		data,
 	)
-
 	if err != nil {
-
-		http.Error(
-			w,
-			err.Error(),
-			http.StatusInternalServerError,
-		)
+		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}
 }

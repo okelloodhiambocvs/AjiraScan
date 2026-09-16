@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sign up | AjiraScan</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<main class="auth-page">
+  <a class="wordmark" href="/">AJIRASCAN</a>
+  <section class="auth-card">
+    <p class="eyebrow">Create your account</p><h1>Sign up</h1>
+    <form method="post" action="/api/v1/auth/register">
+      <label for="account_type">I am joining as</label>
+      <select id="account_type" name="account_type" required>
+        <option value="student">Student or applicant</option>
+        <option value="hr_practitioner">HR practitioner</option>
+        <option value="organization">Organization</option>
+      </select>
+      <label for="name">Full name</label><input id="name" name="name" autocomplete="name" required>
+      <label for="signup_email">Email</label><input id="signup_email" name="email" type="email" autocomplete="email" required>
+      <label for="signup_password">Password</label><input id="signup_password" name="password" type="password" minlength="12" autocomplete="new-password" required>
+      <label for="organization_name">Organization name (for organization accounts)</label><input id="organization_name" name="organization_name">
+      <button type="submit">Create account</button>
+    </form>
+    <p>Already have an account? <a href="/signin">Sign in</a>.</p>
+  </section>
+</main>
+</body>
+</html>

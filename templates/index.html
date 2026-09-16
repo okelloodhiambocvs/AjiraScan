@@ -1,351 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>AjiraScan | Premium ATS Intelligence</title>
-
+<title>AjiraScan | CV and Career Tools</title>
 <link rel="stylesheet" href="/static/style.css">
-
 </head>
-
 <body>
-
-<!-- NAV -->
-
 <nav class="navbar">
-
-<div class="logo">
-
-<div class="logo-icon">A</div>
-
-<div class="logo-text">
-
-<h2>AJIRASCAN</h2>
-<p>Premium ATS Intelligence</p>
-
-</div>
-
-</div>
-
-<div class="nav-links">
-
-<a href="#">Features</a>
-<a href="#">ATS Checker</a>
-<a href="#">Pricing</a>
-
-</div>
-
-<button class="nav-btn">
-
-Get Started
-
-</button>
-
+  <a class="wordmark" href="/">AJIRASCAN</a>
+  <div class="nav-links">
+    <a href="#ats-checker">ATS checker</a>
+    <a href="/signup">Create account</a>
+    <a class="nav-btn" href="/signin">Sign in</a>
+  </div>
 </nav>
 
-<!-- HERO -->
-
-<section class="hero">
-
-<div class="hero-badge">
-
-Trusted by Professionals • Recruiters • Job Seekers
-
-</div>
-
-<h1>
-
-Beat the ATS.<br>
-
-Land More Interviews.
-
-</h1>
-
-<p>
-
-AI-powered ATS intelligence that helps you optimize your CV against real job descriptions.
-
-</p>
-
-<div class="hero-actions">
-
-<button class="primary-btn">
-
-Analyze Resume
-
-</button>
-
-<button class="secondary-btn">
-
-Live Demo
-
-</button>
-
-</div>
-
-<div class="metrics">
-
-<div>
-
-<strong>50K+</strong>
-
-<p>CV Analyses</p>
-
-</div>
-
-<div>
-
-<strong>92%</strong>
-
-<p>Interview Readiness</p>
-
-</div>
-
-<div>
-
-<strong>4.9/5</strong>
-
-<p>User Satisfaction</p>
-
-</div>
-
-</div>
-
-</section>
-
-<!-- HERO GRID -->
-
-<section class="hero-grid">
-
-<!-- FORM -->
-
-<div class="scanner-card">
-
-<form
-id="atsForm"
-method="POST"
-action="/analyze"
-onsubmit="startLoading()"
->
-
-<label>Paste CV</label>
-
-<textarea
-name="cv"
-rows="10"
-placeholder="Paste CV here..."
-></textarea>
-
-<label>Paste Job Description</label>
-
-<textarea
-name="job"
-rows="10"
-placeholder="Paste job description..."
-></textarea>
-
-<button id="analyzeBtn">
-
-Analyze Resume
-
-</button>
-
-<div
-id="loadingBar"
-class="loading-bar hidden"
-></div>
-
-</form>
-
-</div>
-
-<!-- LIVE PREVIEW -->
-
-<div class="preview-card">
-
-<div class="preview-header">
-
-LIVE ATS PREVIEW
-
-</div>
-
-<div class="preview-circle">
-
-92%
-
-</div>
-
-<h3>
-
-Excellent Match
-
-</h3>
-
-<p class="preview-job">
-
-Communications Officer
-
-</p>
-
-<div class="preview-list">
-
-<div class="preview-row">
-
-<span>Keyword Match</span>
-
-<span>88%</span>
-
-</div>
-
-<div class="preview-row">
-
-<span>Skills Alignment</span>
-
-<span>91%</span>
-
-</div>
-
-<div class="preview-row">
-
-<span>ATS Formatting</span>
-
-<span>95%</span>
-
-</div>
-
-</div>
-
-<div class="preview-tags">
-
-<span>Leadership</span>
-<span>Communication</span>
-<span>Media</span>
-<span>Strategy</span>
-
-</div>
-
-</div>
-
-</section>
-
-{{if .Score}}
-
-<section class="report-wrapper">
-
-<div class="report-top">
-
-<div class="score-panel">
-
-<div class="score-circle">
-
-{{.Score}}%
-
-</div>
-
-<h3>ATS SCORE</h3>
-
-<p class="verdict">
-
-{{verdict .Score}}
-
-</p>
-
-<p>
-
-Job Type: {{.JobType}}
-
-</p>
-
-</div>
-
-<div class="report-main">
-
-<h2>
-
-AJIRASCAN ANALYSIS COMPLETE
-
-</h2>
-
-<p class="issues">
-
-RATING: {{.Score}}/100
-({{.IssueCount}} Issues Found)
-
-</p>
-
-<div class="breakdown">
-
-<div class="line">
-
-<span>TAILORING</span>
-
-<span>{{.TailoringScore}}/30</span>
-
-</div>
-
-<div class="line">
-
-<span>CONTENT</span>
-
-<span>{{.ContentScore}}/30</span>
-
-</div>
-
-<div class="line">
-
-<span>SECTIONS</span>
-
-<span>{{.SectionScore}}/20</span>
-
-</div>
-
-<div class="line">
-
-<span>ATS ESSENTIALS</span>
-
-<span>{{.ATSScore}}/20</span>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
-
-{{end}}
+<main>
+  <section class="hero">
+    <p class="eyebrow">CV and career tools</p>
+    <h1>Understand your CV<br>before you apply.</h1>
+    <p>Compare your CV with a job description using transparent, deterministic checks. Results are guidance, not a hiring decision.</p>
+    <div class="hero-actions">
+      <a class="primary-btn" href="#ats-checker">Analyze a CV</a>
+      <a class="secondary-btn" href="/signup">Create an account</a>
+    </div>
+  </section>
+
+  <section id="ats-checker" class="hero-grid">
+    <div class="scanner-card">
+      <h2>CV comparison</h2>
+      <p class="supporting-copy">Paste only information you are authorized to share. We do not use this form to make employment decisions.</p>
+      <form id="atsForm" method="POST" action="/analyze" onsubmit="startLoading()">
+        <label for="cv">Paste CV</label>
+        <textarea id="cv" name="cv" rows="10" maxlength="262144" required placeholder="Paste CV text"></textarea>
+        <label for="job">Paste job description</label>
+        <textarea id="job" name="job" rows="10" maxlength="262144" required placeholder="Paste job description"></textarea>
+        <button id="analyzeBtn" type="submit">Analyze CV</button>
+        <div id="loadingBar" class="loading-bar hidden"></div>
+      </form>
+    </div>
+    <aside class="preview-card">
+      <p class="eyebrow">How it works</p>
+      <h2>Clear, limited guidance</h2>
+      <p>AjiraScan checks keyword alignment, phrases and common CV sections. It does not assess your identity, personality or suitability for employment.</p>
+      <ul class="plain-list">
+        <li>Matched job requirements</li>
+        <li>Missing terms to review</li>
+        <li>Common CV sections found</li>
+      </ul>
+    </aside>
+  </section>
+
+  {{if .Score}}
+  <section class="report-wrapper" aria-live="polite">
+    <div class="report-top">
+      <div class="score-panel">
+        <div class="score-circle">{{.Score}}%</div>
+        <h2>Alignment score</h2>
+        <p class="verdict">{{verdict .Score}}</p>
+        <p>Job type: {{.JobType}}</p>
+      </div>
+      <div class="report-main">
+        <h2>Analysis result</h2>
+        <p class="issues">{{.IssueCount}} areas for review</p>
+        <div class="breakdown">
+          <div class="line"><span>Tailoring</span><span>{{.TailoringScore}}/30</span></div>
+          <div class="line"><span>Content evidence</span><span>{{.ContentScore}}/30</span></div>
+          <div class="line"><span>Section coverage</span><span>{{.SectionScore}}/100</span></div>
+          <div class="line"><span>ATS essentials</span><span>{{.ATSScore}}/20</span></div>
+        </div>
+        <p class="supporting-copy">This score is a deterministic comparison, not a prediction of hiring outcomes.</p>
+      </div>
+    </div>
+  </section>
+  {{end}}
+</main>
 
 <footer>
-
-© 2026 AjiraScan
-
+  <nav aria-label="Footer">
+    <a href="/about">About us</a>
+    <a href="/terms">Terms and conditions</a>
+    <a href="/privacy">Privacy policy</a>
+    <a href="/cookies">Cookies policy</a>
+  </nav>
+  <p>2026 AjiraScan. All rights reserved.</p>
 </footer>
-
 <script>
-
-function startLoading(){
-
-document
-.getElementById("analyzeBtn")
-.innerText="Analyzing...";
-
-document
-.getElementById("analyzeBtn")
-.disabled=true;
-
-document
-.getElementById("loadingBar")
-.classList.remove("hidden");
-
+function startLoading() {
+  document.getElementById("analyzeBtn").innerText = "Analyzing";
+  document.getElementById("analyzeBtn").disabled = true;
+  document.getElementById("loadingBar").classList.remove("hidden");
 }
-
 </script>
-
 </body>
 </html>
