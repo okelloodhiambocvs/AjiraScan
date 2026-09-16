@@ -11,3 +11,12 @@ func TestAnalyzeCategories(t *testing.T) {
 		t.Errorf("expected category results")
 	}
 }
+
+func TestAnalyzeCategoriesUsesStableOrder(t *testing.T) {
+	result := AnalyzeCategories([]string{"go", "docker", "communication"})
+	for index := 1; index < len(result); index++ {
+		if result[index-1].Category > result[index].Category {
+			t.Fatal("expected categories to be sorted")
+		}
+	}
+}

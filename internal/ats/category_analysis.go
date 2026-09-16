@@ -1,5 +1,7 @@
 package ats
 
+import "sort"
+
 type CategoryReport struct {
 	Category string
 	Matched  []string
@@ -15,7 +17,14 @@ func AnalyzeCategories(tokens []string) []CategoryReport {
 
 	var reports []CategoryReport
 
-	for category, keywords := range SkillCategories {
+	categories := make([]string, 0, len(SkillCategories))
+	for category := range SkillCategories {
+		categories = append(categories, category)
+	}
+	sort.Strings(categories)
+
+	for _, category := range categories {
+		keywords := SkillCategories[category]
 		var matched []string
 
 		for _, k := range keywords {

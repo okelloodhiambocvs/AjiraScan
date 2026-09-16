@@ -30,6 +30,8 @@ var jobIndicators = map[JobType][]string{
 	},
 }
 
+var jobTypePriority = []JobType{TechJob, NGOJob, CommunicationJob, BusinessJob}
+
 func DetectJobType(jobText string) JobType {
 	jobText = text.Normalize(jobText)
 	tokens := text.Tokenize(jobText)
@@ -46,10 +48,10 @@ func DetectJobType(jobText string) JobType {
 		}
 	}
 
-	var bestType JobType = UnknownJob
+	bestType := UnknownJob
 	max := 0
-
-	for jt, score := range scoreMap {
+	for _, jt := range jobTypePriority {
+		score := scoreMap[jt]
 		if score > max {
 			max = score
 			bestType = jt

@@ -1,6 +1,10 @@
 package ats
 
-import "ajirascan/internal/text"
+import (
+	"sort"
+
+	"ajirascan/internal/text"
+)
 
 type FrequencyReport struct {
 	Keyword string
@@ -16,9 +20,15 @@ func AnalyzeKeywordFrequency(tokens []string) []FrequencyReport {
 		}
 	}
 
-	var report []FrequencyReport
+	keywords := make([]string, 0, len(freqMap))
+	for keyword := range freqMap {
+		keywords = append(keywords, keyword)
+	}
+	sort.Strings(keywords)
 
-	for keyword, count := range freqMap {
+	report := make([]FrequencyReport, 0, len(keywords))
+	for _, keyword := range keywords {
+		count := freqMap[keyword]
 		report = append(report, FrequencyReport{
 			Keyword: keyword,
 			Count:   count,

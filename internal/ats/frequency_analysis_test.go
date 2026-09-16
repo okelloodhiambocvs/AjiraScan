@@ -15,3 +15,10 @@ func TestAnalyzeKeywordFrequency(t *testing.T) {
 		t.Errorf("expected frequency report")
 	}
 }
+
+func TestAnalyzeKeywordFrequencyUsesStableOrder(t *testing.T) {
+	report := AnalyzeKeywordFrequency([]string{"docker", "go", "go"})
+	if len(report) != 2 || report[0].Keyword != "docker" || report[1].Keyword != "go" {
+		t.Fatalf("expected sorted frequency report, got %#v", report)
+	}
+}

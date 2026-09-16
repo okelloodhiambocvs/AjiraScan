@@ -5,9 +5,9 @@ import "testing"
 func TestCountAchievements(t *testing.T) {
 
 	cv := `
-Managed 15 employees.
-Reviewed 500 customer files.
-Completed 25 audits.
+	Managed 15 employees.
+	Improved response time by 25%.
+	Delivered 6 projects.
 `
 
 	count := CountAchievements(cv)
@@ -17,6 +17,13 @@ Completed 25 audits.
 			"expected 3 achievements, got %d",
 			count,
 		)
+	}
+}
+
+func TestCountAchievementsDoesNotTreatContactOrDatesAsAchievements(t *testing.T) {
+	cv := "Phone: +254 712 345678\nExperience: 2020-2024"
+	if count := CountAchievements(cv); count != 0 {
+		t.Fatalf("expected contact details and dates to be ignored, got %d", count)
 	}
 }
 

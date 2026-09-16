@@ -53,7 +53,7 @@
   </section>
 
   <section id="ats-checker" class="hero-grid">
-  {{if .Score}}
+  {{if .}}
   <section class="report-wrapper" aria-live="polite">
     <div class="report-top">
       <div class="score-panel">
@@ -72,6 +72,10 @@
           <div class="line"><span>ATS essentials</span><span>{{.ATSScore}}/20</span></div>
         </div>
         <p class="supporting-copy">This score is a deterministic comparison, not a prediction of hiring outcomes.</p>
+        <div class="match-details">
+          <div><h3>Matched terms</h3>{{if .Matched}}<ul>{{range .Matched}}<li>{{.}}</li>{{end}}</ul>{{else}}<p>None found.</p>{{end}}</div>
+          <div><h3>Terms to review</h3>{{if .Missing}}<ul>{{range .Missing}}<li>{{.}}</li>{{end}}</ul>{{else}}<p>None found.</p>{{end}}</div>
+        </div>
       </div>
     </div>
   </section>
@@ -87,12 +91,6 @@
   </nav>
   <p>2026 AjiraScan. All rights reserved.</p>
 </footer>
-<script>
-function startLoading() {
-  document.getElementById("analyzeBtn").innerText = "Analyzing";
-  document.getElementById("analyzeBtn").disabled = true;
-  document.getElementById("loadingBar").classList.remove("hidden");
-}
-</script>
+<script src="/static/app.js"></script>
 </body>
 </html>

@@ -15,3 +15,11 @@ func TestMatchKeywordsDeduplicatesJobRequirements(t *testing.T) {
 		t.Fatalf("expected unique job requirements, got matched=%v missing=%v", matched, missing)
 	}
 }
+
+func TestJobTypeTieUsesDocumentedStablePriority(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		if got := DetectJobType("go fundraising"); got != TechJob {
+			t.Fatalf("expected TECH to win tie, got %s", got)
+		}
+	}
+}
