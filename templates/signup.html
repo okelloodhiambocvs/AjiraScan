@@ -3,20 +3,22 @@
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Sign up | AjiraScan</title><link rel="stylesheet" href="/static/style.css"></head>
 <body>
 <main class="auth-page">
-  <a class="wordmark" href="/">AJIRASCAN</a>
+  <a class="brand-logo" href="/"><img src="/static/images/ajirascan-logo.png" alt="AjiraScan"></a>
   <section class="auth-card">
     <p class="eyebrow">Create your account</p><h1>Sign up</h1>
     <form method="post" action="/api/v1/auth/register">
       <label for="account_type">I am joining as</label>
       <select id="account_type" name="account_type" required>
-        <option value="student">Student or applicant</option>
-        <option value="hr_practitioner">HR practitioner</option>
-        <option value="organization">Organization</option>
+        <option value="applicant">Applicant or job seeker</option>
+        <option value="employer">Employer or HR</option>
       </select>
-      <label for="name">Full name</label><input id="name" name="name" autocomplete="name" required>
+      <label for="first_name">First name</label><input id="first_name" name="first_name" autocomplete="given-name" required>
+      <label for="last_name">Last name</label><input id="last_name" name="last_name" autocomplete="family-name" required>
       <label for="signup_email">Email</label><input id="signup_email" name="email" type="email" autocomplete="email" required>
-      <label for="signup_password">Password</label><input id="signup_password" name="password" type="password" minlength="12" autocomplete="new-password" required>
+      <label for="signup_password">Password</label><input id="signup_password" name="password" type="password" minlength="12" autocomplete="new-password" required><p class="supporting-copy">At least 12 characters, with upper-case, lower-case and a number.</p>
+      <label for="confirm_password">Confirm password</label><input id="confirm_password" name="confirm_password" type="password" minlength="12" autocomplete="new-password" required>
       <label for="organization_name">Organization name (for organization accounts)</label><input id="organization_name" name="organization_name">
+      <label class="check"><input type="checkbox" name="privacy" required> I acknowledge the <a href="/privacy">Privacy Policy</a>.</label><label class="check"><input type="checkbox" name="terms" required> I accept the <a href="/terms">Terms and Conditions</a>.</label><label class="check"><input type="checkbox" onclick="signup_password.type=confirm_password.type=this.checked?'text':'password'"> Show passwords</label>
       <button type="submit">Create account</button>
     </form>
     <p>Already have an account? <a href="/signin">Sign in</a>.</p>

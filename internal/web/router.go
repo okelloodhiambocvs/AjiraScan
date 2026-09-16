@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"ajirascan/internal/auth"
 	"ajirascan/internal/database"
 )
 
@@ -14,9 +15,13 @@ func NewRouter(db *database.DB) http.Handler {
 	mux.HandleFunc("/analyze", HomeHandler)
 	mux.Handle("/signin", PageHandler("templates/signin.html"))
 	mux.Handle("/signup", PageHandler("templates/signup.html"))
-	mux.Handle("/api/v1/auth/register", http.HandlerFunc(AuthUnavailableHandler))
-	mux.Handle("/api/v1/auth/login", http.HandlerFunc(AuthUnavailableHandler))
-	mux.Handle("/api/v1/auth/logout", http.HandlerFunc(AuthUnavailableHandler))
+	service := auth.Service{}
+	if db != nil {
+		service.DB = db.SQL
+	}
+	mux.Handle("/api/v1/auth/register", AuthHandler(service))
+	mux.Handle("/api/v1/auth/login", AuthHandler(service))
+	mux.Handle("/api/v1/auth/logout", AuthHandler(service))
 	mux.Handle("/about", PageHandler("templates/index.html"))
 	mux.Handle("/terms", PageHandler("templates/index.html"))
 	mux.Handle("/privacy", PageHandler("templates/index.html"))
