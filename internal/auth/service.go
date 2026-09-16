@@ -24,6 +24,19 @@ type Registration struct {
 	OrganizationName string
 }
 
+type OrganizationMembership struct {
+	OrganizationID   string
+	OrganizationName string
+	Role             Role
+}
+
+type Dashboard struct {
+	UserID        string
+	Email         string
+	FullName      string
+	Organizations []OrganizationMembership
+}
+
 func (s Service) Authenticate(ctx context.Context, token string) (Principal, error) {
 	if s.DB == nil || token == "" {
 		return Principal{}, ErrUnauthenticated
@@ -65,6 +78,46 @@ func (s Service) OrganizationRole(ctx context.Context, principal Principal, orga
 		return "", ErrForbidden
 	}
 	return role, nil
+}
+
+func (s Service) Dashboard(ctx context.Context, principal Principal) (Dashboard, error) {
+	if s.DB == nil || principal.UserID == "" {
+		return Dashboard{}, ErrUnauthenticated
+	}
+	dashboard := Dashboard{UserID: principal.UserID}
+	err := s.DB.QueryRowContext(ctx, `
+		SELECT users.email, COALESCE(applicant_profiles.full_name, '')
+		FROM users
+		LEFT JOIN applicant_profiles ON applicant_profiles.user_id = users.id AND applicant_profiles.deleted_at IS NULL
+		WHERE users.id = $1 AND users.deleted_at IS NULL`, principal.UserID,
+	).Scan(&dashboard.Email, &dashboard.FullName)
+	if errors.Is(err, sql.ErrNoRows) {
+		return Dashboard{}, ErrUnauthenticated
+	}
+	if err != nil {
+		return Dashboard{}, err
+	}
+	rows, err := s.DB.QueryContext(ctx, `
+		SELECT organizations.id, organizations.name, organization_members.role
+		FROM organization_members
+		JOIN organizations ON organizations.id = organization_members.organization_id
+		WHERE organization_members.user_id = $1 AND organizations.deleted_at IS NULL
+		ORDER BY organizations.name ASC`, principal.UserID)
+	if err != nil {
+		return Dashboard{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var membership OrganizationMembership
+		if err := rows.Scan(&membership.OrganizationID, &membership.OrganizationName, &membership.Role); err != nil {
+			return Dashboard{}, err
+		}
+		dashboard.Organizations = append(dashboard.Organizations, membership)
+	}
+	if err := rows.Err(); err != nil {
+		return Dashboard{}, err
+	}
+	return dashboard, nil
 }
 
 type Service struct {

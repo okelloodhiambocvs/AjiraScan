@@ -28,6 +28,9 @@ type Config struct {
 }
 
 func Load() (Config, error) {
+	if err := loadDotEnv(".env"); err != nil {
+		return Config{}, err
+	}
 	sessionTTL, err := requiredDuration("SESSION_TTL", 24*time.Hour)
 	if err != nil {
 		return Config{}, err
@@ -87,6 +90,38 @@ func Load() (Config, error) {
 		return Config{}, errors.New("request, upload and rate-limit settings must be positive")
 	}
 	return cfg, nil
+}
+
+func loadDotEnv(path string) error {
+	data, err := os.ReadFile(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("read %s: %w", path, err)
+	}
+	for lineNumber, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		key, value, found := strings.Cut(line, "=")
+		key = strings.TrimSpace(key)
+		if !found || key == "" {
+			return fmt.Errorf("%s:%d must use KEY=VALUE format", path, lineNumber+1)
+		}
+		if _, exists := os.LookupEnv(key); exists {
+			continue
+		}
+		value = strings.TrimSpace(value)
+		if len(value) >= 2 && ((value[0] == '"' && value[len(value)-1] == '"') || (value[0] == '\'' && value[len(value)-1] == '\'')) {
+			value = value[1 : len(value)-1]
+		}
+		if err := os.Setenv(key, value); err != nil {
+			return fmt.Errorf("set %s from %s: %w", key, path, err)
+		}
+	}
+	return nil
 }
 
 func value(key, fallback string) string {

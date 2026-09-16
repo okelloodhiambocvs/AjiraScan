@@ -35,6 +35,8 @@ func NewRouter(db *database.DB, options ...RouterOptions) http.Handler {
 	mux.Handle("/api/v1/auth/register", authHandler)
 	mux.Handle("/api/v1/auth/login", authHandler)
 	mux.Handle("/api/v1/auth/logout", authHandler)
+	mux.Handle("/dashboard", auth.RequireSession(service, DashboardHandler(service)))
+	mux.Handle("/api/v1/me", auth.RequireSession(service, MeHandler(service)))
 	for path, page := range legalPages() {
 		mux.Handle(path, LegalHandler(page))
 	}

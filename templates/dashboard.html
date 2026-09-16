@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | AjiraScan</title><link rel="stylesheet" href="/static/style.css"></head>
+<body>
+<nav class="navbar"><a class="brand-logo" href="/"><img src="/static/images/ajirascan-logo.png" alt="AjiraScan"></a><form method="post" action="/api/v1/auth/logout"><button type="submit">Sign out</button></form></nav>
+<main class="auth-page">
+  <section class="auth-card">
+    <p class="eyebrow">Authenticated dashboard</p>
+    <h1>Welcome{{if .FullName}}, {{.FullName}}{{end}}</h1>
+    <p>{{.Email}}</p>
+    {{if .Organizations}}
+      <h2>Your organizations</h2>
+      <ul>{{range .Organizations}}<li><strong>{{.OrganizationName}}</strong> — {{.Role}}</li>{{end}}</ul>
+      <p class="supporting-copy">Job and candidate workflows will appear here when they are authorized for your organization.</p>
+    {{else}}
+      <h2>Applicant account</h2>
+      <p class="supporting-copy">Your account is active. Job applications and secure CV upload will be added through the protected applicant workflow.</p>
+    {{end}}
+  </section>
+</main>
+</body>
+</html>

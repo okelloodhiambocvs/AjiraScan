@@ -62,7 +62,7 @@ func AuthHandler(service auth.Service, options ...CookieSettings) http.HandlerFu
 			return
 		}
 		http.SetCookie(w, sessionCookie(settings, token, settings.MaxAge))
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
 }
 
