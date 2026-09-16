@@ -144,9 +144,10 @@ func (m *Middleware) recover(next http.Handler) http.Handler {
 }
 
 type rateLimiter struct {
-	mu      sync.Mutex
-	limit   int
-	buckets map[string]*bucket
+	mu         sync.Mutex
+	limit      int
+	maxBuckets int
+	buckets    map[string]*bucket
 }
 
 type bucket struct {
@@ -155,15 +156,27 @@ type bucket struct {
 }
 
 func newRateLimiter(limit int) *rateLimiter {
-	return &rateLimiter{limit: limit, buckets: make(map[string]*bucket)}
+	return &rateLimiter{limit: limit, maxBuckets: 10000, buckets: make(map[string]*bucket)}
 }
 
 func (l *rateLimiter) allow(key string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := time.Now()
+	for bucketKey, existing := range l.buckets {
+		if now.Sub(existing.start) >= 2*time.Minute {
+			delete(l.buckets, bucketKey)
+		}
+	}
 	b := l.buckets[key]
-	if b == nil || now.Sub(b.start) >= time.Minute {
+	if b == nil {
+		if len(l.buckets) >= l.maxBuckets {
+			return false
+		}
+		l.buckets[key] = &bucket{start: now, count: 1}
+		return true
+	}
+	if now.Sub(b.start) >= time.Minute {
 		l.buckets[key] = &bucket{start: now, count: 1}
 		return true
 	}

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestMiddlewareAddsSecurityHeaders(t *testing.T) {
@@ -52,5 +53,17 @@ func TestMiddlewareRejectsMutationWithoutOrigin(t *testing.T) {
 	handler.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "http://localhost:8080/analyze", nil))
 	if response.Code != http.StatusForbidden {
 		t.Fatalf("expected mutation without Origin to be rejected, got %d", response.Code)
+	}
+}
+
+func TestRateLimiterExpiresInactiveBucketsAndBoundsNewKeys(t *testing.T) {
+	limiter := newRateLimiter(2)
+	limiter.maxBuckets = 1
+	limiter.buckets["expired"] = &bucket{start: time.Now().Add(-3 * time.Minute), count: 1}
+	if !limiter.allow("active") {
+		t.Fatal("expected expired bucket to be reclaimed")
+	}
+	if limiter.allow("another") {
+		t.Fatal("expected limiter to reject a new key when bucket capacity is reached")
 	}
 }

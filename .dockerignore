@@ -1,0 +1,12 @@
+.env
+.git
+.github
+.kilo
+.agents
+tmp
+bin
+uploads
+node_modules
+coverage.out
+*.local
+*.exe
