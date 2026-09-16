@@ -35,7 +35,7 @@ func LegalHandler(page legalPage) http.HandlerFunc {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		t, err := template.ParseFiles("templates/legal.html")
+		t, err := template.ParseFiles(templatePath("legal.html"))
 		if err != nil {
 			http.Error(w, "internal server error", 500)
 			return

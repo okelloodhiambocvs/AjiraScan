@@ -33,7 +33,7 @@ func main() {
 		}
 		defer db.Close()
 	}
-	router := web.NewRouter(db)
+	router := web.NewRouter(db, web.RouterOptions{SessionTTL: cfg.SessionTTL, CookieSecure: cfg.CookieSecure})
 	secured := security.New(cfg.MaxRequestBytes, cfg.RateLimitPerMin, cfg.TrustedOrigins, logger).Wrap(router)
 	server := &http.Server{
 		Addr:              cfg.Address,

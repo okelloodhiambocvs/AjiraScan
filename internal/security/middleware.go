@@ -31,7 +31,7 @@ func New(maxBytes int64, perMinute int, origins []string, logger *slog.Logger) *
 }
 
 func (m *Middleware) Wrap(next http.Handler) http.Handler {
-	return m.recover(m.headers(m.requestID(m.limit(m.rateLimit(m.cors(next))))))
+	return m.recover(m.headers(m.requestID(m.limit(m.rateLimit(m.cors(m.csrf(next)))))))
 }
 
 func (m *Middleware) headers(next http.Handler) http.Handler {
@@ -59,9 +59,7 @@ func (m *Middleware) cors(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		if origin != "" {
-			_, configured := m.TrustedOrigins[origin]
-			sameOrigin := origin == "http://"+r.Host || origin == "https://"+r.Host
-			if !configured && !sameOrigin {
+			if !m.isAllowedOrigin(origin, r) {
 				http.Error(w, "origin not allowed", http.StatusForbidden)
 				return
 			}
@@ -77,6 +75,29 @@ func (m *Middleware) cors(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (m *Middleware) csrf(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet, http.MethodHead, http.MethodOptions:
+			next.ServeHTTP(w, r)
+			return
+		}
+		origin := r.Header.Get("Origin")
+		if origin == "" || !m.isAllowedOrigin(origin, r) {
+			http.Error(w, "origin not allowed", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (m *Middleware) isAllowedOrigin(origin string, r *http.Request) bool {
+	if _, configured := m.TrustedOrigins[origin]; configured {
+		return true
+	}
+	return origin == "http://"+r.Host || origin == "https://"+r.Host
 }
 
 func (m *Middleware) rateLimit(next http.Handler) http.Handler {

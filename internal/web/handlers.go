@@ -3,6 +3,8 @@ package web
 import (
 	"html/template"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"ajirascan/internal/ats"
@@ -45,10 +47,26 @@ var tmpl = template.Must(
 		"index.html",
 	).
 		Funcs(funcs).
-		ParseFiles(
-			"templates/index.html",
-		),
+		ParseFiles(templatePath("index.html")),
 )
+
+func templatePath(name string) string {
+	directory, err := os.Getwd()
+	if err != nil {
+		return filepath.Join("templates", name)
+	}
+	for {
+		candidate := filepath.Join(directory, "templates", name)
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+		parent := filepath.Dir(directory)
+		if parent == directory {
+			return filepath.Join("templates", name)
+		}
+		directory = parent
+	}
+}
 
 func HomeHandler(
 	w http.ResponseWriter,

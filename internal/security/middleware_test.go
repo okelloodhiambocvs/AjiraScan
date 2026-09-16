@@ -43,3 +43,14 @@ func TestMiddlewareAllowsSameOriginWithoutConfiguration(t *testing.T) {
 		t.Fatalf("expected same-origin request, got %d", response.Code)
 	}
 }
+
+func TestMiddlewareRejectsMutationWithoutOrigin(t *testing.T) {
+	handler := New(100, 10, nil, slog.Default()).Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodPost, "http://localhost:8080/analyze", nil))
+	if response.Code != http.StatusForbidden {
+		t.Fatalf("expected mutation without Origin to be rejected, got %d", response.Code)
+	}
+}

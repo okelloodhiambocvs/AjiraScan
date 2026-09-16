@@ -9,19 +9,32 @@ import (
 	"ajirascan/internal/database"
 )
 
-func NewRouter(db *database.DB) http.Handler {
+type RouterOptions struct {
+	SessionTTL   time.Duration
+	CookieSecure bool
+}
+
+func NewRouter(db *database.DB, options ...RouterOptions) http.Handler {
+	settings := RouterOptions{SessionTTL: 24 * time.Hour}
+	if len(options) > 0 {
+		settings = options[0]
+	}
+	if settings.SessionTTL <= 0 {
+		settings.SessionTTL = 24 * time.Hour
+	}
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/analyze", HomeHandler)
-	mux.Handle("/signin", PageHandler("templates/signin.html"))
-	mux.Handle("/signup", PageHandler("templates/signup.html"))
-	service := auth.Service{}
+	mux.Handle("/signin", PageHandler(templatePath("signin.html")))
+	mux.Handle("/signup", PageHandler(templatePath("signup.html")))
+	service := auth.Service{SessionTTL: settings.SessionTTL}
 	if db != nil {
 		service.DB = db.SQL
 	}
-	mux.Handle("/api/v1/auth/register", AuthHandler(service))
-	mux.Handle("/api/v1/auth/login", AuthHandler(service))
-	mux.Handle("/api/v1/auth/logout", AuthHandler(service))
+	authHandler := AuthHandler(service, CookieSettings{Secure: settings.CookieSecure, MaxAge: int(settings.SessionTTL.Seconds())})
+	mux.Handle("/api/v1/auth/register", authHandler)
+	mux.Handle("/api/v1/auth/login", authHandler)
+	mux.Handle("/api/v1/auth/logout", authHandler)
 	for path, page := range legalPages() {
 		mux.Handle(path, LegalHandler(page))
 	}

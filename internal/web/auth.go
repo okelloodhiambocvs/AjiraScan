@@ -2,12 +2,23 @@ package web
 
 import (
 	"net/http"
-	"strings"
 
 	"ajirascan/internal/auth"
 )
 
-func AuthHandler(service auth.Service) http.HandlerFunc {
+type CookieSettings struct {
+	Secure bool
+	MaxAge int
+}
+
+func AuthHandler(service auth.Service, options ...CookieSettings) http.HandlerFunc {
+	settings := CookieSettings{MaxAge: 86400}
+	if len(options) > 0 {
+		settings = options[0]
+	}
+	if settings.MaxAge <= 0 {
+		settings.MaxAge = 86400
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			w.Header().Set("Allow", http.MethodPost)
@@ -34,7 +45,7 @@ func AuthHandler(service auth.Service) http.HandlerFunc {
 			if cookieErr == nil {
 				err = service.Logout(r.Context(), cookie.Value)
 			}
-			http.SetCookie(w, &http.Cookie{Name: "ajirascan_session", Value: "", Path: "/", MaxAge: -1, HttpOnly: true, SameSite: http.SameSiteLaxMode, Secure: r.TLS != nil})
+			http.SetCookie(w, sessionCookie(settings, "", -1))
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
@@ -50,14 +61,19 @@ func AuthHandler(service auth.Service) http.HandlerFunc {
 			http.Error(w, "authentication service unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		http.SetCookie(w, &http.Cookie{Name: "ajirascan_session", Value: token, Path: "/", HttpOnly: true, SameSite: http.SameSiteLaxMode, Secure: r.TLS != nil, MaxAge: 86400})
+		http.SetCookie(w, sessionCookie(settings, token, settings.MaxAge))
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 }
 
-func accountType(value string) string {
-	if strings.TrimSpace(value) == "employer" {
-		return "employer"
+func sessionCookie(settings CookieSettings, value string, maxAge int) *http.Cookie {
+	return &http.Cookie{
+		Name:     "ajirascan_session",
+		Value:    value,
+		Path:     "/",
+		MaxAge:   maxAge,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   settings.Secure,
 	}
-	return "applicant"
 }
