@@ -20,6 +20,8 @@ type Result struct {
 
 	JobType JobType
 
+	ExcludedSelectionCriteria []string
+
 	Improvements []CVImprovement
 
 	// PROFESSIONAL REPORT DATA
@@ -45,6 +47,7 @@ func Analyze(cv, job string) Result {
 	jobTokens := text.Tokenize(
 		text.Normalize(job),
 	)
+	jobTokens, excludedSelectionCriteria := FilterSelectionCriteria(jobTokens)
 
 	matched, missing := MatchKeywords(
 		cvTokens,
@@ -239,6 +242,8 @@ func Analyze(cv, job string) Result {
 		CategoryAnalysis: categories,
 
 		JobType: jobType,
+
+		ExcludedSelectionCriteria: excludedSelectionCriteria,
 
 		Improvements: improvements,
 

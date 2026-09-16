@@ -76,6 +76,7 @@
           <div><h3>Matched terms</h3>{{if .Matched}}<ul>{{range .Matched}}<li>{{.}}</li>{{end}}</ul>{{else}}<p>None found.</p>{{end}}</div>
           <div><h3>Terms to review</h3>{{if .Missing}}<ul>{{range .Missing}}<li>{{.}}</li>{{end}}</ul>{{else}}<p>None found.</p>{{end}}</div>
         </div>
+        {{if .ExcludedSelectionCriteria}}<p class="supporting-copy">Excluded non-job-related selection terms: {{range .ExcludedSelectionCriteria}}{{.}} {{end}}</p>{{end}}
       </div>
     </div>
   </section>
