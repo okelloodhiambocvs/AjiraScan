@@ -13,7 +13,7 @@ AJIRASCAN is a Go modular-monolith foundation for a privacy-aware career and rec
 ## Start locally
 
 1. Copy `.env.example` to `.env`. Its values are development-only placeholders.
-2. Start the local database: `docker compose up -d db`.
+2. Start the local database: `docker compose up -d db`. The default host port is `5433` so it can coexist with an existing local PostgreSQL service.
 3. Run migrations: `go run ./cmd/migrate`.
 4. Run the server: `go run ./cmd/web`.
 5. Open http://127.0.0.1:8080. Health: /healthz. Readiness: /readyz.
