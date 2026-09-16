@@ -30,3 +30,16 @@ func TestMiddlewareRejectsUnknownOrigin(t *testing.T) {
 		t.Fatalf("expected forbidden origin, got %d", response.Code)
 	}
 }
+
+func TestMiddlewareAllowsSameOriginWithoutConfiguration(t *testing.T) {
+	handler := New(100, 10, nil, slog.Default()).Wrap(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	request := httptest.NewRequest(http.MethodPost, "http://localhost:8080/analyze", nil)
+	request.Header.Set("Origin", "http://localhost:8080")
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if response.Code != http.StatusNoContent {
+		t.Fatalf("expected same-origin request, got %d", response.Code)
+	}
+}
